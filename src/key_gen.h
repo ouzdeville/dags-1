@@ -17,9 +17,9 @@
 
 int disjoint_test(gf * u, gf * v );
 int Test_disjoint(gf * L,int n);
-gf* Random_Vect(int m);
+void Random_Vect(int m, gf *vect);
 
-gf* Init_Random_U();
+void Init_Random_U(gf *U);
 void binary_quasi_dyadic_sig(int m, int n, int t, int * b, gf * h_sig, gf * w );
 void Cauchy_Support(gf * Support, gf * W,gf * w);
 int key_pair(unsigned char *pk, unsigned char *sk);

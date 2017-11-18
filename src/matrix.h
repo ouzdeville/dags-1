@@ -63,7 +63,7 @@ gf* produit_matrix_vector(binmat_t A, gf* v);
 
 int inverse_matrice(binmat_t A,binmat_t S);
 
-gf* Eltseq(gf a);
+gf Eltseq(gf a, int k);
 void secret_matrix(binmat_t H,gf * u, gf * v,gf * z);
 void quasi_dyadic_bloc_mat(int s,binmat_t M,gf * sig,int ind_col,int ind_rown);
 

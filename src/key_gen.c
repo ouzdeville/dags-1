@@ -35,7 +35,6 @@ int disjoint_test(gf * u, gf * v ){
 
 int Test_disjoint(gf * L,int n){
 	int i,j;
-	int val=1;
 	for (i=0;i<n;i++){
 		for (j=i+1;j<n;j++){
 			if(L[i]==L[j]){
@@ -47,13 +46,12 @@ int Test_disjoint(gf * L,int n){
 }
 
 
-gf* Random_Vect(int m){
-	int i,j,k;
+void Random_Vect(int m, gf *vect){
+	int i,j;
 	register int v;
 	gf tmp;
-	gf * vect,* U;
+	gf *U;
 	U=(gf *)calloc(gf_card,sizeof(gf));
-	vect=(gf *)calloc(m,sizeof(gf));
 	U[0]=1;
 	for(i=1;i<gf_card;i++){
 		U[i]=i;
@@ -65,23 +63,19 @@ gf* Random_Vect(int m){
 		U[j]=U[v+1];
 		U[v+1]=tmp;
 	}
-	for (j=1;j<=m;j++){
-		vect[j-1]=U[j];
-	}
 
-	return vect;
+	memcpy(vect, U+1, (m)*sizeof(gf));
+  free(U);
 }
 
 
 
 
 
-gf* Init_Random_U(){
-	int i,j,k;
+void Init_Random_U(gf *U){
+	int i,j;
 	register int v;
 	gf tmp;
-	gf * U;
-	U=(gf *)calloc(gf_card,sizeof(gf));
 	for(i=0;i<=gf_ord;i++){
 		U[i]=i;
 	}
@@ -92,7 +86,6 @@ gf* Init_Random_U(){
 		U[j]=U[v+1];
 		U[v+1]=tmp;
 	}
-	return U;
 }
 
 void Remove_From_U(gf elt,gf * U){
@@ -106,18 +99,19 @@ void Remove_From_U(gf elt,gf * U){
 }
 
 void binary_quasi_dyadic_sig(int m, int n, int t, int * b, gf * h_sig, gf * w ){
-	int i,k,j,s,p,l,c,r,ct,consistent_root,consistent_support_block;
+	int i,j,k,s,p,l,l1,c,r,consistent_root,consistent_support_block;
 	int const C=((gf_card)/t);
 	gf * U, * V,* h;
-	gf h_i_inv, h_j_inv,sum_inv_h_i_j_0,sum_inv_h_i_0;
+	gf sum_inv_h_i_j_0, sum_inv_h_i_0;
 	h=(gf *)calloc(gf_card,sizeof(gf));
 	U=(gf *)calloc(gf_card,sizeof(gf));
 	V=(gf *)calloc(gf_card,sizeof(gf));
+
 	do{
-		U=Init_Random_U();
+		Init_Random_U(U);
 		h[0]=U[1];
 		U[1]=0;
-		k=1;
+
 		for (s=0;s<m;s++){
 			i=1<<s;
 			h[i]=U[i+1];
@@ -125,29 +119,27 @@ void binary_quasi_dyadic_sig(int m, int n, int t, int * b, gf * h_sig, gf * w ){
 			for (j=1;j<i;j++){
 				h[i+j]=0;
 				if ( (h[i]!=0 ) && (h[j]!=0 ) ){
-					sum_inv_h_i_j_0=0;
-					sum_inv_h_i_j_0=gf_Inv(h[i])^gf_Inv(h[j]);
-					sum_inv_h_i_j_0=(sum_inv_h_i_j_0)^ (gf_Inv(h[0]));
+          sum_inv_h_i_j_0=(gf_Inv(h[i])^gf_Inv(h[j])) ^(gf_Inv(h[0]));
 					if(sum_inv_h_i_j_0!=0){
 						h[i+j]=gf_Inv(sum_inv_h_i_j_0);
 						Remove_From_U(h[i+j],U);
 					}
 					else {
 					h[i+j]=0;
-		    		}
+		    	}
 				}
 				else {
 					h[i+j]=0;
-		    	}
+		    }
 			}
 		}
 
 		c=0;
-		V=Init_Random_U();
+		Init_Random_U(V);
 		consistent_root=1;
 		for (p=0;p<t;p++){
 					consistent_root=consistent_root & (h[p]!=0);
-				}
+		}
 		if(consistent_root){
 			b[0]=0;
 			c=1;
@@ -165,7 +157,6 @@ void binary_quasi_dyadic_sig(int m, int n, int t, int * b, gf * h_sig, gf * w ){
 					b[c]=j;
 					c=c+1;
 					for (l=j*t;l<(j+1)*t;l++){
-						sum_inv_h_i_0;
 						sum_inv_h_i_0= (gf_Inv(h[l]))^(gf_Inv(h[0]));
 						Remove_From_U(sum_inv_h_i_0,V);
 					}
@@ -173,9 +164,8 @@ void binary_quasi_dyadic_sig(int m, int n, int t, int * b, gf * h_sig, gf * w ){
 			}
 
 		}
+	}while(c*t<n);
 
-		ct=c*t;
-	}while(ct<n);
 	 // Computing w: We just one value of omega. So we stop at the first non-zero element of V.
 	for (j=0;j<gf_card;j++){
 		if(V[j]){
@@ -184,11 +174,9 @@ void binary_quasi_dyadic_sig(int m, int n, int t, int * b, gf * h_sig, gf * w ){
 		}
 	}
 	/******************************************
-	 We choose n0=33 consistents blocks from all the consistents blocks given by the vector  b;
+	 We choose n0=33 consistent blocks from all the consistent blocks given by the vector  b;
 	We then obtain
 	******************************************/
-	l=0;
-	int l1=0;
 	for (j=0;j<n0_val;j++){
 		for (k=0;k<order;k++){
 			l=(order)*j+k;
@@ -214,7 +202,6 @@ do{
 	h=(gf*)calloc(code_length,sizeof(gf));
 	binary_quasi_dyadic_sig(gf_extd,code_length,order,b,h,w);
 	for (i=0;i<code_length;i++){
-		sum_inv_h_i_0=0;
 		sum_inv_h_i_0=(gf_Inv(h[i]))^(gf_Inv(h[0]));
 		Support[i]=(sum_inv_h_i_0)^(w[0]);
 	}
@@ -234,18 +221,14 @@ do{
 }
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//***********************************************************************************
-//      The fonction key_pair generates the public key and the secret key which will be stored in files
-//
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+/*
+ * The function key_pair generates the public key and the
+ * secret key which will be stored in files
+ */
 int key_pair(unsigned char *pk, unsigned char *sk) {
 	gf * u, *v, *w, *z;
-	binmat_t H;
+	int return_value;
+	binmat_t H, H_syst;
 	u = (gf*) calloc(order, sizeof(gf));
 	v = (gf*) calloc(code_length, sizeof(gf));
 	w = (gf*) calloc(code_length, sizeof(gf));
@@ -253,47 +236,41 @@ int key_pair(unsigned char *pk, unsigned char *sk) {
 
 	gf_init(6);
 	Cauchy_Support(v, u, w);
+	free(w);
 	cfile_vec_F12("omega.txt", order, u);
-	z = Random_Vect(n0_val);
+	Random_Vect(n0_val, z);
 	H = mat_ini(pol_deg * (order), code_length);
-
-	// construction de la matrice H
+	// construction matrix H
 	secret_matrix(H, u, v, z);
 
 	//cfile_matrix_F12("secret_matrix.txt", H.rown, H.coln, H);
 
-	binmat_t H_base, H_syst;
+/*
+ * The matrix H_base is obtained by the projection of the matrix
+ *  H into the base field through the function  'mat_Into_base'
+ */
+	H_syst = mat_Into_base(H);
 
-//*********************************************************************************************************
-//   The matrix H_base is obtained by the projection of the matrix H_fin into the base field through the
-//                                 	 function  'mat_Into_base'
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
-	H_base = mat_Into_base(H);
-	H_syst = mat_copy(H_base);
-
-	binmat_t S;
-	S = mat_ini_Id(H_syst.rown);
-
-//**************************************************************************************************************
-//  Transform H_syst into its systematic by the function "syst" .
-//  
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	int valueretur = syst(H_syst);
-	if (valueretur != 0) {
-		return valueretur;
+// Transform H_syst into its systematic by the function "syst" .
+	return_value = syst(H_syst);
+	if (return_value != 0) {
+		return return_value;
 	}
-
-//*************************************************************************************************************
-//       H_syst is in the form (G | I) we determine G and store it  in the file "pubkey.text" as  the publci key
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*
+ * H_syst is in the form (G | I) we determine G and store
+ * it  in the file "pubkey.text" as  the public key
+ */
 
 //G=mat_ini(code_dimension,code_length-code_dimension);
 //G_mat(G,H_syst);
 //set_public_key( G,pk);
 	store_pk(H_syst, pk);
 	store_sk(u, v, z, sk);
-
+	free(u);
+	free(v);
+	free(z);
+	mat_free(H);
+	mat_free(H_syst);
 	return 0;
 
 }

@@ -201,34 +201,30 @@ gf* mat_line_mult_with_return(binmat_t A, gf a, int i) {
 	return Line;
 }
 
-gf* Eltseq(gf a) {
-	gf* x = (gf*) calloc(m_val, sizeof(gf));
+gf Eltseq(gf a, int k) {
+	gf x[m_val];
 	x[0] = a >> 6;
 	x[1] = a & (63);
-
-	return x;
+	return x[k];
 }
-
+//If known that m_val is not going to change as a parameter
+//unroll the for loops and remove the call to Eltseq
 binmat_t mat_Into_base(binmat_t H) {
 	int k, i, j;
-	int s = (order), t = pol_deg;
-	//int r = 2, n = 2, m = 2;
-	int r = s * t;
-	int n = code_length;
-	int m = m_val;
+	int r = order * pol_deg;
 
-	binmat_t HH = mat_ini(m * r, n);
-	for (k = 0; k < m; k++) {
+	binmat_t HH = mat_ini(m_val * r, code_length);
+	for (k = 0; k < m_val; k++) {
 		for (i = 0; i < r; i++) {
-			for (j = 0; j < n; j++) {
-				HH.coeff[k * r + i][j] = Eltseq(H.coeff[i][j])[k];
+			for (j = 0; j < code_length; j++) {
+				HH.coeff[k * r + i][j] = Eltseq(H.coeff[i][j], k);
 			}
 		}
 
 	}
 	return HH;
-
 }
+
 
 int* test_mat(binmat_t A) {
 	//int k =A->coln-NB_ERRORS*EXT_DEGREE;
@@ -381,9 +377,11 @@ int syst(binmat_t H) {
 			aa = H.coeff[i][i + n - k];
 			invPiv = gf_Inv_subfield(aa);
 			H.coeff[i][i + n - k] = 1;
+
 			for (j = 0; j < n; j++) {
-				if (j == i + n - k)
+				if (j == i + n - k){
 					continue;
+				}
 				H.coeff[i][j] = gf_Mult_subfield(H.coeff[i][j], invPiv);
 			}
 
@@ -588,15 +586,16 @@ void secret_matrix(binmat_t H, gf * u, gf * v, gf * z) {
 	binmat_t T[pol_deg];  // T will contain all the block matrices H1 to H2
 	gf * Z;
 	Z = (gf*) calloc(code_length, sizeof(gf));
-	int i, j, k;
-	T[0] = mat_ini(order, code_length);
+	int i, j, k, l = 0;
+	for(i = 0; i < pol_deg; i++) {
+		T[i] = mat_ini(order, code_length);
+	}
+	H_fin = mat_ini(pol_deg * (order), code_length);
+
 	for (i = 0; i < order; i++) {
 		for (j = 0; j < code_length; j++) {
 			T[0].coeff[i][j] = gf_Inv(u[i] ^ v[j]);
 		}
-	}
-	for (i = 1; i < pol_deg; i++) {
-		T[i] = mat_ini(order, code_length);
 	}
 	for (k = 1; k < pol_deg; k++) {
 		for (i = 0; i < order; i++) {
@@ -623,8 +622,7 @@ void secret_matrix(binmat_t H, gf * u, gf * v, gf * z) {
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	H_fin = mat_ini(pol_deg * (order), code_length);
-	int l = 0;
+
 	for (k = 0; k < pol_deg; k++) {
 		l = (order) * k;
 		for (i = 0; i < order; i++) {
@@ -638,14 +636,16 @@ void secret_matrix(binmat_t H, gf * u, gf * v, gf * z) {
 //           Construction of the matrix H=H_fin.D  where D=diag(Zi)
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	//H=mat_ini(pol_deg*(order),code_length); 
 	for (i = 0; i < pol_deg * (order); i++) {
 		for (j = 0; j < code_length; j++) {
 			H.coeff[i][j] = gf_Mult(H_fin.coeff[i][j], Z[j]);
 		}
 	}
-
+	mat_free(H_fin);
+	free(Z);
+	for(i=0;i<pol_deg;i++){
+		mat_free(T[i]);
+	}
 }
 
 void quasi_dyadic_bloc_mat(int s, binmat_t M, gf * sig, int ind_col,
