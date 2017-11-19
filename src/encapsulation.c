@@ -19,10 +19,16 @@ int encapsulation(const unsigned char *pk, unsigned char *ct, unsigned char *ss)
 	/*
 	 * Memory's allocation
 	 */
+	m = (unsigned char*) calloc(k_prime, sizeof(unsigned char));
 	rho = (unsigned char*) calloc(k_sec, sizeof(unsigned char));
 	sigma = (unsigned char*) calloc(code_dimension - k_sec,
 			sizeof(unsigned char));
+
+	hash_sigma = (unsigned char*) calloc(code_length, sizeof(unsigned char));//Should remove
 	u = (gf*) calloc(code_dimension, sizeof(gf));
+	r = (unsigned char*) calloc(code_dimension, sizeof(unsigned char));//Should remove
+	sigma_extend = (unsigned char*) calloc(code_dimension,//Should remove
+			sizeof(unsigned char));
 	dd = (gf*) calloc(k_prime, sizeof(gf));
 
 	/*
@@ -38,12 +44,10 @@ int encapsulation(const unsigned char *pk, unsigned char *ct, unsigned char *ss)
 	 * H(x) = sponge(x,k_prime)
 	 */
 
-
 	r = sponge(m_extend, code_dimension);
 	for (i = 0; i < code_dimension; i++){
 		r[i] = r[i] % gf_card_sf;
 	}
-
 	d = sponge(m, k_prime);
 	for (i = 0; i < k_prime; i++){
 		dd[i]= (unsigned char)(d[i] % gf_card_sf);
@@ -57,27 +61,35 @@ int encapsulation(const unsigned char *pk, unsigned char *ct, unsigned char *ss)
 	 * Step_3:  Parse r as (ρ||σ) then set u = (ρ||m)
 	 */
 	for (i = 0; i < code_dimension; i++) {
-		if (i < k_sec)
-			rho[i] = r[i] % gf_card_sf;  //rho recovery
-		else
-			sigma[i - k_sec] = r[i] % gf_card_sf; // sigma recovery
+		if (i < k_sec){
+			rho[i] = (unsigned char)(r[i] % gf_card_sf);  //rho recovery
+		}
+		else{
+			sigma[i - k_sec] = (unsigned char)(r[i] % gf_card_sf); // sigma recovery
+		}
 	}
 
 	for (i = 0; i < code_dimension; i++) {
-		if (i < k_sec)
-			u[i] = ((gf)rho[i]);
-		else
-			u[i] = ((gf)m[i - k_sec]);
+		if (i < k_sec){
+			u[i] = ((unsigned char)rho[i]);
+		}
+		else{
+			u[i] = ((unsigned char)m[i - k_sec]);
+		}
 	}
 	free(rho);
-	free(m);
+
+
 	/*
 	 * Step_4: Generate error vector e of length n and weight w from sigma
+	 * TODO verify that extend is supposed to be size code_dimension or code_length
+	 * originally code_dimension
 	 */
 	sigma_extend = extend(sigma, k_prime, code_dimension);
 	hash_sigma = sponge(sigma_extend, code_length);
 
 	error_array = random_e(code_length, gf_card_sf, n0_w, hash_sigma);
+
 //           //cfile_vec_char("erreur.txt", code_length, e);
 	free(sigma);
 	free(sigma_extend);
@@ -86,7 +98,6 @@ int encapsulation(const unsigned char *pk, unsigned char *ct, unsigned char *ss)
 	 * Step_5: Recovery of G and Compute c = uG + e
 	 */
 	binmat_t G = mat_ini(code_dimension, code_length);
-	//c = (gf*) calloc(code_length, sizeof(gf));
 
 	//set_Public_matrix(pk, code_dimension, code_length-code_dimension, G);
 	recup_pk(pk, G);
@@ -97,7 +108,8 @@ int encapsulation(const unsigned char *pk, unsigned char *ct, unsigned char *ss)
 
 	for (i = 0; i < code_length + k_prime; i++) {
 		if (i < code_length){
-			ct[i] = (unsigned char)((gf)c[i] ^ (gf)error_array[i]);
+			ct[i] = (unsigned char)((unsigned char)c[i] ^ 
+				(unsigned char)error_array[i]);
 		}
 		else{
 			ct[i] = dd[i - code_length];
@@ -106,15 +118,19 @@ int encapsulation(const unsigned char *pk, unsigned char *ct, unsigned char *ss)
 	}
 	free(c);
 	free(dd);
+	free(error_array);
 	//cfile_vec_F6("chiffrer.txt",code_length,c2);
 
 	/*
 	 * Step_6: Compute K = K(m)
 	 */
 	unsigned char* K = sponge(m_extend, ss_lenght);
-	for (i = 0; i < ss_lenght; i++)
+	for (i = 0; i < ss_lenght; i++){
 		ss[i] = K[i];
-
+	}
+	free(m_extend);
+	free(K);
+	free(m);
 	return 0;
 	/*END*/
 }
