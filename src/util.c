@@ -4,8 +4,9 @@
 unsigned char* extend(unsigned char* m, int size1, int size2) {
 	int i;
 	unsigned char* res = (unsigned char*) calloc(size2, sizeof(unsigned char));
-	for (i = 0; i < size1; i++)
+	for (i = 0; i < size1; i++){
 		res[i] = m[i];
+	}
 	return res;
 }
 
@@ -52,7 +53,8 @@ int indice_in_vec(unsigned int * v, int j, int size) {
 
 /*random_e **************************************************************************************
  *************************************************************************************************/
-
+//TODO in this function the value k greatly exceeds the indexes of sigma.
+//How is this actually supposed to work?
 unsigned char* random_e(int size, int q, int w, unsigned char* sigma) {
 	srand(time(0));
 	unsigned char* e = (unsigned char*) calloc(size, sizeof(unsigned char));
@@ -60,11 +62,12 @@ unsigned char* random_e(int size, int q, int w, unsigned char* sigma) {
 	int i, j = 0, k = 0, jeton = 0;
 
 	for (i = 0; i < size; i++) {
-		if (sigma[i] % q == 0)
+		if (sigma[i] % q == 0){
 			continue;
-		if (j == w)
+		}
+		if (j == w){
 			break;
-
+		}
 		do {
 			jeton = (sigma[k + 1] ^ (sigma[k] << 4)) % size;
 			k++;
@@ -74,6 +77,7 @@ unsigned char* random_e(int size, int q, int w, unsigned char* sigma) {
 		jeton = 0;
 		j++;
 	}
+	free(v);
 	return e;
 }
 //*END**********************************************************************************************/
@@ -143,6 +147,7 @@ void store_pk(binmat_t M, unsigned char * pk) {
 		//affiche_vecteur(L,code_length-code_dimension);
 		//printf(" \n");	
 	}
+	free(L);
 }
 
 void recup_pk(const unsigned char * pk, binmat_t G) {
@@ -199,8 +204,12 @@ void recup_pk(const unsigned char * pk, binmat_t G) {
 		}
 
 	}
+	free(Sig_all_line);
+	mat_free(M);
+	free(sig);
 }
 
+//TODO remove the intermediate variables
 void store_sk(gf * u, gf * v, gf * z, unsigned char * sk) {
 	int i, a = 0;
 	gf c1, c2;
