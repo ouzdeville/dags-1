@@ -12,11 +12,18 @@
 #include<sys/types.h>
 #include<stdint.h>
 
+
 #include "round.h"
-#include "sponge.h"
+
+// replace sponge.h by KangarooTwelve --fastest branch of SHA3 
+// #include "sponge.h"
+
+
 #include "fichier.h"
 #include "util.h"
 
-
+#include <keccak/KangarooTwelve.h>
 
 int encapsulation(const unsigned char *pk,unsigned char *ct,  unsigned char *ss);
+
+#define customization_length 4 
