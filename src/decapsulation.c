@@ -54,7 +54,7 @@ int decapsulation(unsigned char *ss, const unsigned char *ct,
 	for (i = 0; i < code_length; i++) {
 		c[i] = ct[i];
 	}
-	int decode_value = decodage(H_alt, c, e, mot);
+	int decode_value = decoding_H(H_alt, c, e, mot);
 
 	/*ETAPE_2 of the decapasulation :  Output ⊥ if decoding fails or wt(e) != n0_w...........................
 	 *******************************************************************************************************/
