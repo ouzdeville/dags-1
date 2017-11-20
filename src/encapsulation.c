@@ -4,137 +4,166 @@
  * For any other usage , contact the author(s) to ascode_dimmension permission.                             *
  **********************************************************************************************
  */
-
+#include <assert.h>
 #include "encapsulation.h"
 
-int encapsulation(const unsigned char *pk, unsigned char *ct, unsigned char *ss) {
+void modulo_array(unsigned char *array, unsigned int array_size, unsigned int modulo)
+{
+	// TODO: Move this function to util.c, declare in util.h
+	int i;
+	// because gf_card_sf is power of two, so use the trick to perform fast modulo
+	// https://stackoverflow.com/a/14997264
+	for (i = 0; i < array_size; i++)
+		array[i] = ( array[i] & (modulo - 1) );
+}
+
+int encapsulation(const unsigned char *pk, unsigned char *ct, unsigned char *ss)
+{
+	// Init subfield
 	gf_init(6);
 
-	unsigned char *m, *d, *rho, *sigma, *u, *e, *hash_sigma, *r, *m_extend,
-			*sigma_extend;
-	gf *c, *e1, *u1, *dd;
+	/*
+	 * Memory's allocation
+	 */
 
-	int i;
+	// TODO: Should move to header, easier to manage this fix variable
+	const unsigned char *customization = "DAGs";
+	/*
+	 * Step_1:  Choose randomly  m ←  F_q^k, m is seen as a sequence of k_prime integer
+	 * modulo 2^6
+	 */
 
-	/* Memory's allocation.............................................................................
-	 *************************************************************************************************/
-	m = (unsigned char*) calloc(k_prime, sizeof(unsigned char));
-	rho = (unsigned char*) calloc(k_sec, sizeof(unsigned char));
-	sigma = (unsigned char*) calloc(code_dimension - k_sec,
-			sizeof(unsigned char));
-
-	hash_sigma = (unsigned char*) calloc(code_length, sizeof(unsigned char));
-
-	//x=( unsigned char*)calloc(400,sizeof( unsigned char));
-	u = (unsigned char*) calloc(code_dimension, sizeof(unsigned char));
-	u1 = (gf*) calloc(code_dimension, sizeof(gf));
-	r = (unsigned char*) calloc(code_dimension, sizeof(unsigned char));
-	m_extend = (unsigned char*) calloc(code_dimension, sizeof(unsigned char));
-	sigma_extend = (unsigned char*) calloc(code_dimension,
-			sizeof(unsigned char));
-	e = (unsigned char*) calloc(code_length, sizeof(unsigned char));
-	e1 = (gf*) calloc(code_length, sizeof(gf));
-
-	/*ETAPE_1:  Choose randomly  m ←  F_q^k, m is seen as a sequence of k_prime integer modulo 2^6.......
-	 *****************************************************************************************************/
-
+	// length of m is 32
+	unsigned char *m = (unsigned char *)calloc(k_prime, sizeof(unsigned char));
 	m = random_m(k_prime, gf_card_sf);
-	m_extend = extend(m, k_prime, code_dimension);
 
-	/*ETAPE_2:  Compute r = G(m) and d = H(m) with  G(x) = sponge(x,k) and H(x) = sponge(x,k_prime).........
-	 *******************************************************************************************************/
-	dd = (gf*) calloc(k_prime, sizeof(gf));
+	/*
+	 * Step_2:  Compute r = G(m) and d = H(m) with  G(x) = sponge(x,k) and
+	 * H(x) = sponge(x,k_prime)
+	 */
 
-	r = sponge(m_extend, code_dimension);
-	for (i = 0; i < code_dimension; i++)
-		r[i] = r[i] % gf_card_sf;
+	// No need to use extend
+	// m_extend = extend(m, k_prime, code_dimension);
 
-	d = sponge(m, k_prime);
+	// KangarooTwelve( *input, size of input, *output, size of output, *customize, length of customize)
+
+	// KangarooTwelve return 0 is success, 1 is fail. Need to catch it.
+	unsigned char *r = (unsigned char *)calloc(code_dimension, sizeof(unsigned char)); // TODO: Should remove
+
+	int test = 0;
+	// m : input, k_prime : length of input, r: output, code_dimension: length of output, customization: domain-string, customization_length: length of customization
+	test = KangarooTwelve(m, k_prime, r, code_dimension, customization, customization_length);
+	assert(test == 0);
+
+	modulo_array(r, code_dimension, gf_card_sf);
+
+	// KangarooTwelve( *input, size of input, *output, size of output, *customize, length of customize)
+	// d = sponge(m, k_prime)
+	unsigned char *d = (unsigned char *)calloc(k_prime, sizeof(gf));
+
+	// m: input, k_prime: length of input, d: output, k_prime: output length
+	test = KangarooTwelve(m, k_prime, d, k_prime, customization, customization_length);
+	assert(test == 0);
+
+	modulo_array(d, k_prime, gf_card_sf);
+	/*
 	for (i = 0; i < k_prime; i++)
-		d[i] = d[i] % gf_card_sf;
-
-	for (i = 0; i < k_prime; i++) { //Conversion
-		dd[i] = d[i];
+	{
+		dd[i] = (unsigned char)(d[i] % gf_card_sf);
 	}
-
+	free(d);
+	*/
 	//cfile_vec_F6("d_file.txt",k_prime, dd);
 
-	/*ETAPE_3:  Parse r as (ρ||σ) then set u = (ρ||m).......................................................
-	 *******************************************************************************************************/
+	/*
+	 * Step_3:  Parse r as (ρ||σ) then set u = (ρ||m)
+	 */
+	unsigned char *rho = (unsigned char *)calloc(k_sec, sizeof(unsigned char));
+	unsigned char *sigma = (unsigned char *)calloc(code_dimension - k_sec, sizeof(unsigned char));
 
-	for (i = 0; i < code_dimension; i++) {
+	int i;
+	for (i = 0; i < code_dimension; i++)
+	{
 		if (i < k_sec)
-			rho[i] = r[i] % gf_card_sf;  //rho recovery
+			// optimized modulo
+			// rho[i] = (unsigned char)(r[i] % gf_card_sf); //rho recovery
+			rho[i] = (unsigned char)(r[i] & (gf_card_sf - 1)); //rho recovery
 		else
-			sigma[i - k_sec] = r[i] % gf_card_sf; // sigma recovery
+			// optimized modulo
+			// sigma[i - k_sec] = (unsigned char)(r[i] % gf_card_sf); // sigma recovery
+			sigma[i - k_sec] = (unsigned char)(r[i] & (gf_card_sf - 1)); // sigma recovery
 	}
 
-	for (i = 0; i < code_dimension; i++) {
+	gf *u = (gf *)calloc(code_dimension, sizeof(gf));
+	for (i = 0; i < code_dimension; i++)
+	{
 		if (i < k_sec)
-			u[i] = rho[i];
+			u[i] = ((unsigned char)rho[i]);
 		else
-			u[i] = m[i - k_sec];
+			u[i] = ((unsigned char)m[i - k_sec]);
 	}
+	free(rho);
 
-	/*ETAPE_4: Generate error vector e of length n and weight w from sigma.........................................
-	 *********************************************************************************************************/
+	/*
+	 * Step_4: Generate error vector e of length n and weight w from sigma
+	 * TODO verify that extend is supposed to be size code_dimension or code_length
+	 * originally code_dimension
+	 */
 
-	sigma_extend = extend(sigma, k_prime, code_dimension);
-	hash_sigma = sponge(sigma_extend, code_length);
+	// No need to extend
+	// sigma_extend = extend(sigma, k_prime, code_dimension);
 
-	e = random_e(code_length, gf_card_sf, n0_w, hash_sigma);
+	// KangarooTwelve( *input, size of input, *output, size of output, *customize, length of customize)
+	// hash_sigma = sponge(sigma_extend, code_length);
+	unsigned char *hash_sigma = (unsigned char *)calloc(code_length, sizeof(unsigned char)); // TODO: Should remove
 
-//           //cfile_vec_char("erreur.txt", code_length, e);
+	// sigma : input, code_dimension: length input, hash_sigma : output, code_length: length output
+	test = KangarooTwelve(sigma, code_dimension, hash_sigma, code_length, customization, customization_length);
+	assert(test == 0);
 
-	/*ETAPE_5: Recovery of G and Compute c = uG + e................................................................
-	 *************************************************************************************************************/
-	gf* c2 = (gf*) calloc(code_length, sizeof(gf));
+	unsigned char *error_array = random_e(code_length, gf_card_sf, n0_w, hash_sigma);
 
-	c = (gf*) calloc(code_length, sizeof(gf));
+	free(sigma);
+	free(hash_sigma);
 
-	//binmat_t G = mat_ini(code_dimension,code_length-code_dimension);
+	/*
+	 * Step_5: Recovery of G and Compute c = uG + e
+	 */
+
 	binmat_t G = mat_ini(code_dimension, code_length);
+
 	//set_Public_matrix(pk, code_dimension, code_length-code_dimension, G);
 	recup_pk(pk, G);
 
-	for (i = 0; i < code_dimension; i++)
-		u1[i] = (gf) u[i];
+	gf *c = produit_vector_matrix_Sf(u, G);
+	mat_free(G);
+	free(u);
 
-	//c1=produit_vector_matrix_Sf(u1,G);
-
-	//for(i = 0;i<code_length;i++){
-	//if(i<code_dimension) c[i] = u1[i] ;
-	//else                 c[i] = c1[i-code_dimension];
-	//}
-
-	c = produit_vector_matrix_Sf(u1, G);
-
-	for (i = 0; i < code_length; i++) { //Conversion
-		e1[i] = e[i];
-	}
-
-	for (i = 0; i < code_length; i++)
-		c2[i] = c[i] ^ e1[i];
-
-	for (i = 0; i < code_length + k_prime; i++) {
+	for (i = 0; i < code_length + k_prime; i++)
+	{
 		if (i < code_length)
-			ct[i] = c2[i];
+			ct[i] = (unsigned char)((unsigned char)c[i] ^ (unsigned char)error_array[i]);
 		else
-			ct[i] = dd[i - code_length];
-
+			ct[i] = d[i - code_length];
 	}
+	free(c);
+	free(d);
+	free(error_array);
 
-	//cfile_vec_F6("chiffrer.txt",code_length,c2);
+	/*
+	 * Step_6: Compute K = K(m)
+	 */
+	//unsigned char* K = sponge(m_extend, ss_lenght);
+	
 
-	/*ETAPE_6: Compute K = K(m)...................................................................................
-	 ************************************************************************************************************/
+	// KangarooTwelve( *input, size of input, *output, size of output, *customize, length of customize)
+	unsigned char *K = (unsigned char *)calloc(ss_lenght, sizeof(unsigned char));
+	KangarooTwelve(m, k_prime, K, ss_lenght, customization, customization_length);
 
-	unsigned char* K = sponge(m_extend, ss_lenght);
-	for (i = 0; i < ss_lenght; i++)
-		ss[i] = K[i];
+	// Now we have K
 
+	free(K);
+	free(m);
 	return 0;
-	/*END********************************************************************************************************/
-
+	/*END*/
 }
-
