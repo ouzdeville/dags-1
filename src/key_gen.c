@@ -52,20 +52,25 @@ void Random_Vect(int m, gf *vect){
 	gf tmp;
 	gf *U;
 	U=(gf *)calloc(gf_card,sizeof(gf));
+	unsigned char *random_bytes = malloc(gf_card);
+	randombytes(random_bytes, gf_ord);
 	U[0]=1;
 	for(i=1;i<gf_card;i++){
 		U[i]=i;
 	}
 	for (j=1;j<gf_card;j++){
-		srand(time(NULL));
-		v=(rand()%(j+1));
+//		srand(time(NULL));
+//		v=(rand()%(j+1));
+		v = random_bytes[j] % (j + 1);
 		tmp=U[j];
 		U[j]=U[v+1];
 		U[v+1]=tmp;
 	}
 
 	memcpy(vect, U+1, (m)*sizeof(gf));
+
   free(U);
+  free(random_bytes);
 }
 
 
@@ -76,12 +81,17 @@ void Init_Random_U(gf *U){
 	int i,j;
 	register int v;
 	gf tmp;
+	unsigned char *random_bytes = malloc(gf_ord);
+	randombytes(random_bytes, gf_ord);
 	for(i=0;i<=gf_ord;i++){
 		U[i]=i;
 	}
+	//TODO verify that this is not supposed to be j < gf_ord
+	//Also do we need two versions openssl rand() and randombytes()?
 	for (j=1;j<=gf_ord;j++){
-		srand(time(NULL));
-		v=(rand()%(j+1));
+//		srand(time(NULL));
+//		v=(rand()%(j+1));
+		v = random_bytes[j] % (j + 1);
 		tmp=U[j];
 		U[j]=U[v+1];
 		U[v+1]=tmp;

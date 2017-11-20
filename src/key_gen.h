@@ -12,7 +12,7 @@
 #include "poly.h"
 #include "param.h"
 #include "util.h"
-
+#include "rng.h"
 
 
 int disjoint_test(gf * u, gf * v );
