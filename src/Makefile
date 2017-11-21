@@ -3,12 +3,12 @@
 CC       = gcc
 OBJ      = gf.o poly.o matrix.o fichier.o key_gen.o encapsulation.o decapsulation.o util.o sponge.o decoding.o kem.o rng.o PQCgenKAT_kem.o  
 LINKOBJ  = gf.o poly.o matrix.o fichier.o key_gen.o encapsulation.o decapsulation.o util.o sponge.o decoding.o kem.o rng.o PQCgenKAT_kem.o
-LIBS     = -L/usr/lib -lssl -lcrypto -lkeccak 
+LIBS     = -L/usr/lib -lssl -lcrypto -lkeccak
 INCS     = 
 CXXINCS  = 
 BIN      = PQCgenKAT_kem
 LFLAGS=
-CFLAGS=-g -c -Wall -I.
+CFLAGS= -g -c -Wall -I.
 RM       = rm -f
 
 .PHONY: all all-before all-after clean clean-custom
@@ -19,7 +19,7 @@ clean: clean-custom
 	${RM} $(OBJ) $(BIN)
 
 $(BIN): $(OBJ)
-	$(CC) -O3 $(LINKOBJ) -o $(BIN) $(LIBS) -g 
+	$(CC) -O3 $(LINKOBJ) -o $(BIN) $(LIBS) -g
 
 gf.o: gf.c
 	$(CC) -c gf.c -o gf.o $(CFLAGS)

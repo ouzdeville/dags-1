@@ -11,19 +11,17 @@
 #include<stdio.h>
 #include<sys/types.h>
 #include<stdint.h>
-
+#include <assert.h>
 
 #include "round.h"
-
-// replace sponge.h by KangarooTwelve --fastest branch of SHA3 
-// #include "sponge.h"
-
-
+#include "sponge.h"
 #include "fichier.h"
 #include "util.h"
 
-#include <keccak/KangarooTwelve.h>
+
 
 int encapsulation(const unsigned char *pk,unsigned char *ct,  unsigned char *ss);
 
-#define customization_length 4 
+#include <keccak/KangarooTwelve.h>
+
+#define cus_len 4 // I random pick this number to fullfill parameter 
