@@ -3,7 +3,7 @@
 
 #include "gf.h"
 
-typedef struct polynome {
+typedef struct polynomial {
   int deg, size;
   gf * coeff;
 } * poly_t; // Polynomyal coefficients belong to the finite field

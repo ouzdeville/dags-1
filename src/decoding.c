@@ -9,7 +9,7 @@
 //Bulding of decoding fuction
 
 /*************************************************************************************************************
- * The polynome_syndrome_1 function compute the syndrome S in polymial form with inputs a mot and a Parity matrix H                           *
+ * The polynome_syndrome_1 function compute the syndrome S in polynomial form with inputs a short IV and a Parity matrix H                           *
  **************************************************************************************************************
  */
 void polynome_syndrome_1(binmat_t H, gf * mot, poly_t S) {

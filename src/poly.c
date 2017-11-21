@@ -13,7 +13,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 poly_t poly_alloc(int d) {
   poly_t p;
-  p = (poly_t) malloc(sizeof (struct polynome));
+  p = (poly_t) malloc(sizeof (struct polynomial));
   p->deg = -1;
   p->size = d + 1;
   p->coeff = (gf *) calloc(p->size, sizeof (gf));
@@ -27,7 +27,7 @@ poly_t poly_alloc(int d) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 poly_t poly_copy(poly_t p){
   poly_t q;
-  q = (poly_t) malloc(sizeof (struct polynome));
+  q = (poly_t) malloc(sizeof (struct polynomial));
   q->deg = p->deg;
   q->size = p->size;
   q->coeff = (gf *) calloc(q->size, sizeof (gf));
