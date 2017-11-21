@@ -46,8 +46,7 @@ gf *gf_antilog;
 /* we obtain a value between 0 and (q-1) included, the class of 0 is
  represented by 0 or q-1 (this is why we write _K->exp[q-1]=_K->exp[0]=1)*/
 
-// Replace % by &. (d) % 63 = d & 0x3e, faster in assembly. Checked.
-#define gf_modq_1_sf(d) ((d)&0x3e)
+#define gf_modq_1_sf(d) ((d) % 63)
 
 // Check y is zero, if zero, return 0, else calculate
 #define gf_mul_fast_subfield(x, y) ((y) ? gf_antilog_sf[gf_modq_1_sf(gf_log_sf[x] + gf_log_sf[y])] : 0)
@@ -68,8 +67,7 @@ gf *gf_antilog;
 ////////////////////////////////////////////////////////////////////
 ///////////////////////// MAIN FIELD OPERATION /////////////////////
 
-// Replace d % 4095 by d & 4094.
-#define _gf_modq_1(d) ((d) & 0xffe)
+#define _gf_modq_1(d) ((d) % 4095)
 
 // Check y is zero, if zero, return 0, else calculate
 #define gf_mul_fast(x, y) ((y) ? gf_antilog[_gf_modq_1(gf_log[x] + gf_log[y])] : 0)
