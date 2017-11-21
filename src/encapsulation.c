@@ -19,6 +19,7 @@ int encapsulation(const unsigned char *pk, unsigned char *ct, unsigned char *ss)
 	/*
 	 * Memory's allocation
 	 */
+	d = (unsigned char*) calloc(k_prime, sizeof(unsigned char));
 	m = (unsigned char*) calloc(k_prime, sizeof(unsigned char));
 	rho = (unsigned char*) calloc(k_sec, sizeof(unsigned char));
 	sigma = (unsigned char*) calloc(code_dimension - k_sec,
@@ -145,7 +146,7 @@ int encapsulation(const unsigned char *pk, unsigned char *ct, unsigned char *ss)
 	/*
 	 * Step_6: Compute K = K(m)
 	 */
-	unsigned char* K;
+	unsigned char* K = (unsigned char*) calloc(ss_lenght, sizeof(unsigned char));
 	// Replace by KangarooTwelve
 	// K = sponge(m_extend, ss_lenght);
 	// m: input type unsigned char len k_prime | K: output type unsigned char len ss_length
