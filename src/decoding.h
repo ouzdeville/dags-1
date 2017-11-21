@@ -12,4 +12,4 @@
 
 void polynome_syndrome_1(  binmat_t H, gf * mot, poly_t S);
 binmat_t alternant_matrix(binmat_t H, gf * u);
-int decodage(binmat_t H_alt, gf* c,gf* e,gf* mot );
+int decoding_H(binmat_t H_alt, gf* c,gf* e,gf* mot );

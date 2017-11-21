@@ -110,7 +110,7 @@ binmat_t alternant_matrix(binmat_t H, gf * u) {
  * Take as input the matrix in alternant form just created (it was Halt) and the received word c.               *
  ****************************************************************************************************************/
 
-int decodage(binmat_t H_alt, gf* c, gf* error, gf* code_word) {
+int decoding_H(binmat_t H_alt, gf* c, gf* error, gf* code_word) {
 		gf_init(6);
 	int i, k, j;
 	int s = (order), t = pol_deg;
@@ -250,7 +250,7 @@ int decodage(binmat_t H_alt, gf* c, gf* error, gf* code_word) {
 			LOG_12[1] = 0;
 			for (i = 1; i < gf_card; i++) {
 
-				p = gf_Mult1(p, 64);
+				p = gf_mult(p, 64);
 				LOG_12[p] = i;
 
 			}
