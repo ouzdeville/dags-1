@@ -137,7 +137,7 @@ gf gf_Pow1(gf in, int n)
     t = in;
     while (n != 0)
     {
-        if (n & 1 == 1)
+        if ((n & 1) == 1)
         {
             h = gf_Mult(h, t);
         }
@@ -157,7 +157,7 @@ gf gf_pow(gf in, int n)
     t = in;
     while (n != 0)
     {
-        if (n & 1 == 1)
+        if ((n & 1) == 1)
         {
             h = gf_mult(h, t);
         }
