@@ -26,7 +26,7 @@ produit_matrix (binmat_t A, binmat_t B)
 	      a = 0;
 	      for (k = 0; k < A.coln; k++)
 		{
-		  a = a ^ gf_Mult(A.coeff[i][k], B.coeff[k][j]);
+		  a = a ^ gf_mult(A.coeff[i][k], B.coeff[k][j]);
 		}
 	      res.coeff[i][j] = a;
 	    }
@@ -222,11 +222,9 @@ mat_random_swapcol (binmat_t A)
   unsigned char *random_bytes_col_2 = malloc (A.coln);
   randombytes (random_bytes_col_2, A.coln);
   //srand(time(NULL));
-  for (k = 0; k < A.coln; k++)
-    {
-      i = (random_bytes_col[k] % (A.coln));
-      j = (random_bytes_col_2[k] % (A.coln));
-    }
+  i = (random_bytes_col[0] % (A.coln));
+  j = (random_bytes_col_2[1] % (A.coln));
+
   free (random_bytes_col);
   free (random_bytes_col_2);
 
@@ -377,7 +375,7 @@ syst_mat (binmat_t H)
 	{
 	  for (j = 0; j < n; j++)
 	    {
-	      H.coeff[i][j] = gf_Mult(H.coeff[i][j],
+	      H.coeff[i][j] = gf_mult(H.coeff[i][j],
 				      gf_Inv_subfield(H.coeff[i][i+n-k]));
 
 	    }
@@ -397,8 +395,8 @@ syst_mat (binmat_t H)
 	      j = 0;
 	      for (j = 0; j < n; j++)
 		{
-		  elim = gf_Mult(H.coeff[i][i + n - k], H.coeff[l][j]);
-		  elim = elim ^ (gf_Mult(H.coeff[l][i + n - k], H.coeff[i][j]));
+		  elim = gf_mult(H.coeff[i][i + n - k], H.coeff[l][j]);
+		  elim = elim ^ (gf_mult(H.coeff[l][i + n - k], H.coeff[i][j]));
 		  H.coeff[l][j] = elim;
 
 		}
@@ -461,9 +459,9 @@ syst (binmat_t H)
 		}
 	    }
 	}
-      if (l == k && i != k - 1)
+      if (l == k && (i != (k - 1)))
 	{
-	  //printf("Non systematic Matrix %d\n",l);
+	  printf("Non systematic Matrix %d\n",l);
 	  return -1;
 	}
       if (test == 1)
@@ -600,7 +598,7 @@ produit_vector_matrix (gf* v, binmat_t A)
     {
       for (k = 0; k < A.rown; k++)
 	{
-	  Res[i] ^= gf_Mult(A.coeff[k][i], v[k]);
+	  Res[i] ^= gf_mult(A.coeff[k][i], v[k]);
 	}
     }
   return Res;
@@ -615,7 +613,7 @@ produit_vector_matrix_Sf (gf* v, binmat_t A)
     {
       for (k = 0; k < A.rown; k++)
 	{
-	  Res[i] ^= gf_Mult(A.coeff[k][i], v[k]);
+	  Res[i] ^= gf_mult(A.coeff[k][i], v[k]);
 	}
 
     }
@@ -633,7 +631,7 @@ produit_matrix_vector (binmat_t A, gf* v)
       Res[i] = 0;
       for (k = 0; k < A.coln; k++)
 	{
-	  Res[i] ^= gf_Mult(A.coeff[i][k], v[k]);
+	  Res[i] ^= gf_mult(A.coeff[i][k], v[k]);
 	}
     }
   return Res;
@@ -704,12 +702,12 @@ inverse_matrice (binmat_t A, binmat_t S)
       if (H.coeff[i][i] != 1)
 	{
 	  aa = H.coeff[i][i];
-	  invPiv = gf_inv(aa);
+	  invPiv = gf_inv (aa);
 	  for (l = 0; l < n; l++)
 	    {
-	      H.coeff[i][l] = gf_Mult(H.coeff[i][l], invPiv);
+	      H.coeff[i][l] = gf_mult(H.coeff[i][l], invPiv);
 	      // Transformation on S
-	      S.coeff[i][l] = gf_Mult(S.coeff[i][l], invPiv);
+	      S.coeff[i][l] = gf_mult(S.coeff[i][l], invPiv);
 
 	    }
 
@@ -730,9 +728,9 @@ inverse_matrice (binmat_t A, binmat_t S)
 	      for (j = 0; j < n; j++)
 		{
 		  H.coeff[l][j] = H.coeff[l][j]
-		      ^ (gf_Mult(piv_align, H.coeff[i][j]));
+		      ^ (gf_mult(piv_align, H.coeff[i][j]));
 		  S.coeff[l][j] = S.coeff[l][j]
-		      ^ (gf_Mult(piv_align, S.coeff[i][j]));
+		      ^ (gf_mult(piv_align, S.coeff[i][j]));
 		}
 
 	    }
@@ -763,7 +761,7 @@ secret_matrix (binmat_t H, gf * u, gf * v, gf * z)
     {
       for (j = 0; j < code_length; j++)
 	{
-	  T[0].coeff[i][j] = gf_inv(u[i] ^ v[j]);
+	  T[0].coeff[i][j] = gf_inv (u[i] ^ v[j]);
 	}
     }
   for (k = 1; k < pol_deg; k++)
@@ -772,7 +770,7 @@ secret_matrix (binmat_t H, gf * u, gf * v, gf * z)
 	{
 	  for (j = 0; j < code_length; j++)
 	    {
-	      T[k].coeff[i][j] = gf_Mult(T[0].coeff[i][j],
+	      T[k].coeff[i][j] = gf_mult(T[0].coeff[i][j],
 					 T[k - 1].coeff[i][j]);
 	    }
 	}
@@ -816,7 +814,7 @@ secret_matrix (binmat_t H, gf * u, gf * v, gf * z)
     {
       for (j = 0; j < code_length; j++)
 	{
-	  H.coeff[i][j] = gf_Mult(H_fin.coeff[i][j], Z[j]);
+	  H.coeff[i][j] = gf_mult(H_fin.coeff[i][j], Z[j]);
 	}
     }
   mat_free (H_fin);

@@ -1,4 +1,3 @@
-
 #include "key_gen.h"
 
 int
@@ -18,29 +17,32 @@ disjoint_test (gf * u, gf * v)
   return 0;
 }
 
-int Test_disjoint(gf * L,int n){
-	int i,j;
-	for (i=0;i<n;i++){
-		for (j=i+1;j<n;j++){
-			if(L[i]==L[j]){
-				return -1;
-			}
-		}
+int
+Test_disjoint (gf * L, int n)
+{
+  int i, j;
+  for (i = 0; i < n; i++)
+    {
+      for (j = i + 1; j < n; j++)
+	{
+	  if (L[i] == L[j])
+	    {
+	      return -1;
+	    }
 	}
-	return 0;
+    }
+  return 0;
 }
-
 
 void
 generate_random_vector (int m, gf *vect)
 {
-  int i, j;
-  register int v;
+  int i, j, v;
   gf tmp;
   gf *U;
   U = (gf *) calloc (gf_card, sizeof(gf));
   unsigned char *random_bytes = malloc (gf_card);
-  randombytes (random_bytes, gf_ord);
+  randombytes (random_bytes, gf_card);
   U[0] = 1;
   for (i = 1; i < gf_card; i++)
     {
@@ -74,7 +76,8 @@ init_random_element (gf *U)
     {
       U[i] = i;
     }
-  for (j = 1; j <= gf_ord; j++)
+
+  for (j = 1; j < gf_ord; j++)
     {
 //		srand(time(NULL));
 //		v=(rand()%(j+1));
@@ -128,20 +131,21 @@ binary_quasi_dyadic_sig (int m, int n, int t, int * b, gf * h_sig, gf * w)
 	      h[i + j] = 0;
 	      if ((h[i] != 0) && (h[j] != 0))
 		{
-		  sum_inv_h_i_j_0 = (gf_inv(h[i])^gf_inv(h[j])) ^(gf_inv(h[0]));
-		  if(sum_inv_h_i_j_0!=0)
+		  sum_inv_h_i_j_0 = (gf_inv (h[i]) ^ gf_inv (h[j]))
+		      ^ (gf_inv (h[0]));
+		  if (sum_inv_h_i_j_0 != 0)
 		    {
-		      h[i+j]=gf_inv(sum_inv_h_i_j_0);
-		      Remove_From_U(h[i+j],U);
+		      h[i + j] = gf_inv (sum_inv_h_i_j_0);
+		      Remove_From_U (h[i + j], U);
 		    }
 		  else
 		    {
-		      h[i+j]=0;
+		      h[i + j] = 0;
 		    }
 		}
 	      else
 		{
-		  h[i+j]=0;
+		  h[i + j] = 0;
 		}
 	    }
 	}
@@ -159,8 +163,8 @@ binary_quasi_dyadic_sig (int m, int n, int t, int * b, gf * h_sig, gf * w)
 	  c = 1;
 	  for (r = 0; r < t; r++)
 	    {
-	      sum_inv_h_i_0 = (gf_inv(h[r])) ^ (gf_inv(h[0]));
-	      Remove_From_U (gf_inv(h[r]), V);
+	      sum_inv_h_i_0 = (gf_inv (h[r])) ^ (gf_inv (h[0]));
+	      Remove_From_U (gf_inv (h[r]), V);
 	      Remove_From_U (sum_inv_h_i_0, V);
 	    }
 	  for (j = 1; j < C; j++)
@@ -177,7 +181,7 @@ binary_quasi_dyadic_sig (int m, int n, int t, int * b, gf * h_sig, gf * w)
 		  c = c + 1;
 		  for (l = j * t; l < (j + 1) * t; l++)
 		    {
-		      sum_inv_h_i_0 = (gf_inv(h[l])) ^ (gf_inv(h[0]));
+		      sum_inv_h_i_0 = (gf_inv (h[l])) ^ (gf_inv (h[0]));
 		      Remove_From_U (sum_inv_h_i_0, V);
 		    }
 		}
@@ -229,12 +233,12 @@ cauchy_support (gf * Support, gf * W, gf * w)
       binary_quasi_dyadic_sig (gf_extd, code_length, order, b, h, w);
       for (i = 0; i < code_length; i++)
 	{
-	  sum_inv_h_i_0 = (gf_inv(h[i])) ^ (gf_inv(h[0]));
+	  sum_inv_h_i_0 = (gf_inv (h[i])) ^ (gf_inv (h[0]));
 	  Support[i] = (sum_inv_h_i_0) ^ (w[0]);
 	}
       for (i = 0; i < order; i++)
 	{
-	  W[i] = (gf_inv(h[i])) ^ (w[0]);
+	  W[i] = (gf_inv (h[i])) ^ (w[0]);
 	}
       test_u = Test_disjoint (Support, code_length);
       test_v = Test_disjoint (W, order);

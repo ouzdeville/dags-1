@@ -15,7 +15,7 @@
 
 /**
  * @brief Method to perform the decapsulation using secret key
- * @param ss
+ * @param ss secret shared
  * @param ct
  * @param sk secret key to extract the key
  */

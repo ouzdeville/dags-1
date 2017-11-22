@@ -25,7 +25,7 @@
  * @brief Method to perform the encapsulation using public key
  * @param pk public key from the scheme
  * @param ct
- * @param ss
+ * @param ss secret shared
  */
 int
 encapsulation (const unsigned char *pk, unsigned char *ct, unsigned char *ss);

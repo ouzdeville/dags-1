@@ -52,7 +52,7 @@ decapsulation (unsigned char *ss, const unsigned char *ct,
    *****************************************************************************************************/
   //variable declaration
   gf* e = (gf*) calloc (code_length, sizeof(gf));
-  gf* mot = (gf*) calloc (code_dimension, sizeof(gf));
+  gf* mot = (gf*) calloc (code_length, sizeof(gf));
   gf* c = (gf*) calloc (code_length, sizeof(gf));
 
   for (i = 0; i < code_length; i++)
@@ -111,15 +111,15 @@ decapsulation (unsigned char *ss, const unsigned char *ct,
   // r = sponge(m_extend, code_dimension);
   // m: input type unsigned char len k_prime | r: output type unsigned char len code_dimesion
   test = KangarooTwelve (m_extend, k_prime, r1, code_dimension, custom,
-			 cus_len);
-  //assert (test == 0); // Catch Error
+  cus_len);
+  assert (test == 0); // Catch Error
   for (i = 0; i < code_dimension; i++)
     r1[i] = r1[i] % gf_card_sf;
 
   //Compute d1 = H(m1) where H is  sponge SHA-512 function
   //d1 = sponge (m1, k_prime);
   test = KangarooTwelve (m1, k_prime, d1, k_prime, custom, cus_len);
-  //assert (test == 0); // Catch Error
+  assert (test == 0); // Catch Error
   for (i = 0; i < k_prime; i++)
     d1[i] = d1[i] % gf_card_sf;
 
@@ -158,10 +158,7 @@ decapsulation (unsigned char *ss, const unsigned char *ct,
 			 custom,
 			 cus_len);
 
-  free (sigma1);
-  free (rho2);
-  free (sigma_extend);
-  //assert (test == 0); // Catch Error
+  assert (test == 0); // Catch Error
 
   //Generate error vector e2 of length code_length and weight n0_w from hash_sigma1 by using random_e function.
   e2 = random_e (code_length, gf_card_sf, n0_w, hash_sigma1);
@@ -181,28 +178,30 @@ decapsulation (unsigned char *ss, const unsigned char *ct,
   for (i = 0; i < k_prime; i++)
     d[i] = ct[i + code_length];
 
+
+  /*ETAPE_7 of the decapasulation: If the previous condition is not satisfied, compute the shared secret ss by
+   using sponge function and extend function
+   ************************************************************************************************************/
   if (compare (e_prime, e2, code_length) == 0
       || compare (rho1, rho2, k_sec) == 0 || compare (d, d1, k_prime) == 0)
     {
       return -1;
     }
-
-  /*ETAPE_7 of the decapasulation: If the previous condition is not satisfied, compute the shared secret ss by
-   using sponge function and extend function
-   ************************************************************************************************************/
-
   else
     {
       unsigned char* K = (unsigned char*) calloc (ss_lenght,
 						  sizeof(unsigned char));
       //unsigned char* K = sponge (m_extend, ss_lenght);
       test = KangarooTwelve (m_extend, k_prime, K, ss_lenght, custom, cus_len);
-      //assert (test == 0); // Catch Error
+      assert (test == 0); // Catch Error
       for (i = 0; i < ss_lenght; i++)
 	ss[i] = K[i];
 
       free (K);
     }
+  free (sigma1);
+  free (rho2);
+  free (sigma_extend);
 
   return 0;
 

@@ -74,17 +74,17 @@ gf *gf_antilog;
 
 // Check x is zero, if zero, return 0, else calculate
 // Multiplication in the field : apha^i*alpha^j=alpha^(i+j)
-#define gf_Mult(x, y) ((x) ? gf_mul_fast(x, y) : 0)
+//#define gf_Mult(x, y) ((x) ? gf_mul_fast(x, y) : 0)
 
 ////////////////////////////////////////////////////////////////////
 ///////////////////////// INCORRECT FUNCTION ///////////////////////
 // Should be REMOVED
 
 // Incorrect gf_Pow due to incorrect antilog table
-#define gf_Pow(x, i) (gf_antilog[(_gf_modq_1(gf_log[x] * i))])
+//#define gf_Pow(x, i) (gf_antilog[(_gf_modq_1(gf_log[x] * i))])
 
 // Incorrect gf_DIV due to incorrect antilog table
-#define gf_Div(x, y) ((x) ? gf_antilog[_gf_modq_1(gf_log[x] - gf_log[y])] : 0) // Division in the field : apha^i/alpha^j=alpha^(i-j)
+//#define gf_Div(x, y) ((x) ? gf_antilog[_gf_modq_1(gf_log[x] - gf_log[y])] : 0) // Division in the field : apha^i/alpha^j=alpha^(i-j)
 
 // Incorrect gf_Inv due to incorrect antilog table
 //#define gf_Inv(x) gf_antilog[gf_ord - gf_log[x]]                               // Inverse in the field
@@ -102,7 +102,7 @@ gf gf_inv(gf in);
 gf gf_sq(gf in);
 
 // Incorrect gf_Div1
-gf gf_Div1(gf a, gf b);
+//gf gf_Div1(gf a, gf b);
 
 // Propose gf_Div2
 gf gf_div(gf a, gf b);

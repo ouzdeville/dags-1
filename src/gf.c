@@ -96,21 +96,6 @@ gf gf_diff1(gf a, gf b)
 }
 
 
-// Incorrect gf_Div due to gf_Mult and gf_Inv
-// Use in poly.c
-gf gf_Div1(gf a, gf b)
-{
-    if (b == 0)
-    {
-        fprintf(stderr, "ERROR %d is not invertible", b);
-        exit(-1);
-    }
-    else
-    {
-        gf res = gf_Mult(a, gf_inv(b));
-        return res;
-    }
-}
 
 // Correct gf_Div
 // Use in poly.c
@@ -128,24 +113,6 @@ gf gf_div(gf a, gf b)
     }
 }
 
-// Wrong gf_Pow due to incorrect gf_Mult
-gf gf_Pow1(gf in, int n)
-{
-
-    gf h, t;
-    h = 1;
-    t = in;
-    while (n != 0)
-    {
-        if ((n & 1) == 1)
-        {
-            h = gf_Mult(h, t);
-        }
-        n = n >> 1;
-        t = gf_Mult(t, t);
-    }
-    return h;
-}
 
 
 // Correct gf_Pow

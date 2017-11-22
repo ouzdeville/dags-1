@@ -19,7 +19,7 @@ void polynome_syndrome_1(binmat_t H, gf * mot, poly_t S) {
 	for (j = 0; j < H.rown; j++) {
 		tmp = 0;
 		for (i = 0; i < H.coln; i++) {
-			tmp ^= gf_Mult(H.coeff[j][i], mot[i]);
+			tmp ^= gf_mult(H.coeff[j][i], mot[i]);
 		}
 		S->coeff[j] = tmp;
 	}
@@ -195,7 +195,7 @@ int decoding_H(binmat_t H_alt, gf* c, gf* error, gf* code_word) {
 		gf * ver;
 		ver = (gf*) calloc(code_length, sizeof(gf));
 		for (i = 0; i < code_length; i++) {
-			ver[i] = gf_Mult(H_alt.coeff[1][i], gf_inv(H_alt.coeff[0][i]));
+			ver[i] = gf_mult(H_alt.coeff[1][i], gf_inv(H_alt.coeff[0][i]));
 		}
 
 		/*                                   Polynome POS gives the position of the errors
@@ -226,22 +226,22 @@ int decoding_H(binmat_t H_alt, gf* c, gf* error, gf* code_word) {
 				pol = 1;
 				for (i = 0; i <= pos->deg; i++) {
 					if (i != j) {
-						tmp = gf_Mult(ver[pos->coeff[i]],
+						tmp = gf_mult(ver[pos->coeff[i]],
 							      gf_inv(ver[pos->coeff[j]]));
 						tmp = gf_add(1, tmp);
-						pol = gf_Mult(pol, tmp);
+						pol = gf_mult(pol, tmp);
 					}
 				}
 				gf o = poly_eval(omega, gf_inv(ver[pos->coeff[j]]));
-				tmp1 = gf_Mult(H_alt.coeff[0][pos->coeff[j]], pol);
-				app->coeff[k] = gf_Mult(o, gf_inv(tmp1));
+				tmp1 = gf_mult(H_alt.coeff[0][pos->coeff[j]], pol);
+				app->coeff[k] = gf_mult(o, gf_inv(tmp1));
 			}
 			poly_calcule_deg(app);
 
 			/*                                   Determining the value of the errors
 			 ***************************************************************************************************************/
 			gf alpha;
-			alpha = gf_Pow(64, 65);
+			alpha = gf_pow(64, 65);
 
 			int * LOG_12;
 			LOG_12 = (int*) calloc(gf_card, sizeof(int));
