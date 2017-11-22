@@ -217,7 +217,7 @@ void poly_rem(poly_t p, poly_t g) {
   poly_calcule_deg(g);
   d = p->deg - g->deg;
   if (d >= 0) {
-  	a = gf_Inv(poly_tete(g));
+  	a = gf_inv(poly_tete(g));
     for (i = p->deg; d >= 0; --i, --d) {
       if (poly_coeff(p, i) != 0) {
 				b = gf_Mult(a, poly_coeff(p, i));
@@ -248,7 +248,7 @@ poly_t poly_quo(poly_t p, poly_t d) {
   rem = poly_copy(p);
   quo = poly_alloc(dp - dd);
   poly_set_deg(quo, dp - dd);
-  a = gf_Inv(poly_coeff(d, dd));
+  a = gf_inv(poly_coeff(d, dd));
   for (i = dp; i >= dd; --i) {
     b = gf_Mult(a, poly_coeff(rem, i));
     poly_set_coeff(quo, i - dd, b);

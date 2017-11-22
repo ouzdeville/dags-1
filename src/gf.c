@@ -107,7 +107,7 @@ gf gf_Div1(gf a, gf b)
     }
     else
     {
-        gf res = gf_Mult(a, gf_Inv(b));
+        gf res = gf_Mult(a, gf_inv(b));
         return res;
     }
 }

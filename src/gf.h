@@ -87,7 +87,7 @@ gf *gf_antilog;
 #define gf_Div(x, y) ((x) ? gf_antilog[_gf_modq_1(gf_log[x] - gf_log[y])] : 0) // Division in the field : apha^i/alpha^j=alpha^(i-j)
 
 // Incorrect gf_Inv due to incorrect antilog table
-#define gf_Inv(x) gf_antilog[gf_ord - gf_log[x]]                               // Inverse in the field
+//#define gf_Inv(x) gf_antilog[gf_ord - gf_log[x]]                               // Inverse in the field
 
 ////////////////////////////////////////////////////////////////////
 
@@ -110,7 +110,7 @@ gf gf_div(gf a, gf b);
 // In correct gf_Pow1
 gf gf_Pow1(gf f, int n);
 
-// Propose gf_Pow2
+// Propose gf_Ppw
 gf gf_pow(gf f, int n);
 
 // Un-nessary use antilog and log table

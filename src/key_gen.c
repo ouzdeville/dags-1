@@ -1,25 +1,6 @@
-/*********************************************************************************************
- * DAGS: Key Encapsulation using Dyadic GS Codes.                       *
- * This code is exclusively intended for submission to the NIST Post=Quantum Cryptography.    *
- * For any other usage , contact the author(s) to ask permission.                             *
- **********************************************************************************************
- */
 
 #include "key_gen.h"
 
-////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////
-////////////////////       Key Generation Elements   ////////////////////////
-//////////////////QUASI-DYADIC-SIGNATURE 	AND  CAUCHY SUPPORT  GENERATION.////////////
-////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////
-
-//***********************************************************************************
-//                               Test_disjoint
-////////////////////////////////////////////////////////////////////////////////////
 int
 disjoint_test (gf * u, gf * v)
 {
@@ -84,17 +65,15 @@ generate_random_vector (int m, gf *vect)
 void
 init_random_element (gf *U)
 {
-  int i, j;
-  register int v;
+  int i, j, v;
   gf tmp;
-  unsigned char *random_bytes = malloc (gf_ord);
+  unsigned char *random_bytes = 0;
+  random_bytes = malloc (gf_ord);
   randombytes (random_bytes, gf_ord);
   for (i = 0; i <= gf_ord; i++)
     {
       U[i] = i;
     }
-  //TODO verify that this is not supposed to be j < gf_ord
-  //Also do we need two versions openssl rand() and randombytes()?
   for (j = 1; j <= gf_ord; j++)
     {
 //		srand(time(NULL));
@@ -104,6 +83,8 @@ init_random_element (gf *U)
       U[j] = U[v + 1];
       U[v + 1] = tmp;
     }
+  //free (U);
+  free (random_bytes);
 }
 
 void
@@ -147,10 +128,10 @@ binary_quasi_dyadic_sig (int m, int n, int t, int * b, gf * h_sig, gf * w)
 	      h[i + j] = 0;
 	      if ((h[i] != 0) && (h[j] != 0))
 		{
-		  sum_inv_h_i_j_0 = (gf_Inv(h[i])^gf_Inv(h[j])) ^(gf_Inv(h[0]));
+		  sum_inv_h_i_j_0 = (gf_inv(h[i])^gf_inv(h[j])) ^(gf_inv(h[0]));
 		  if(sum_inv_h_i_j_0!=0)
 		    {
-		      h[i+j]=gf_Inv(sum_inv_h_i_j_0);
+		      h[i+j]=gf_inv(sum_inv_h_i_j_0);
 		      Remove_From_U(h[i+j],U);
 		    }
 		  else
@@ -178,8 +159,8 @@ binary_quasi_dyadic_sig (int m, int n, int t, int * b, gf * h_sig, gf * w)
 	  c = 1;
 	  for (r = 0; r < t; r++)
 	    {
-	      sum_inv_h_i_0 = (gf_Inv(h[r])) ^ (gf_Inv(h[0]));
-	      Remove_From_U (gf_Inv(h[r]), V);
+	      sum_inv_h_i_0 = (gf_inv(h[r])) ^ (gf_inv(h[0]));
+	      Remove_From_U (gf_inv(h[r]), V);
 	      Remove_From_U (sum_inv_h_i_0, V);
 	    }
 	  for (j = 1; j < C; j++)
@@ -196,7 +177,7 @@ binary_quasi_dyadic_sig (int m, int n, int t, int * b, gf * h_sig, gf * w)
 		  c = c + 1;
 		  for (l = j * t; l < (j + 1) * t; l++)
 		    {
-		      sum_inv_h_i_0 = (gf_Inv(h[l])) ^ (gf_Inv(h[0]));
+		      sum_inv_h_i_0 = (gf_inv(h[l])) ^ (gf_inv(h[0]));
 		      Remove_From_U (sum_inv_h_i_0, V);
 		    }
 		}
@@ -248,12 +229,12 @@ cauchy_support (gf * Support, gf * W, gf * w)
       binary_quasi_dyadic_sig (gf_extd, code_length, order, b, h, w);
       for (i = 0; i < code_length; i++)
 	{
-	  sum_inv_h_i_0 = (gf_Inv(h[i])) ^ (gf_Inv(h[0]));
+	  sum_inv_h_i_0 = (gf_inv(h[i])) ^ (gf_inv(h[0]));
 	  Support[i] = (sum_inv_h_i_0) ^ (w[0]);
 	}
       for (i = 0; i < order; i++)
 	{
-	  W[i] = (gf_Inv(h[i])) ^ (w[0]);
+	  W[i] = (gf_inv(h[i])) ^ (w[0]);
 	}
       test_u = Test_disjoint (Support, code_length);
       test_v = Test_disjoint (W, order);

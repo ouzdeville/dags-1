@@ -178,7 +178,7 @@ int decoding_H(binmat_t H_alt, gf* c, gf* error, gf* code_word) {
 		/*                  Then we find error locator poly (sigma) and error evaluator poly (omega)
 		 ***************************************************************************************************************/
 		gf delta;
-		delta = gf_Inv(poly_eval(u, 0));
+		delta = gf_inv(poly_eval(u, 0));
 		poly_t pol;
 		omega = poly_alloc(st / 2);
 		sigma = poly_alloc(st / 2);
@@ -195,7 +195,7 @@ int decoding_H(binmat_t H_alt, gf* c, gf* error, gf* code_word) {
 		gf * ver;
 		ver = (gf*) calloc(code_length, sizeof(gf));
 		for (i = 0; i < code_length; i++) {
-			ver[i] = gf_Mult(H_alt.coeff[1][i], gf_Inv(H_alt.coeff[0][i]));
+			ver[i] = gf_Mult(H_alt.coeff[1][i], gf_inv(H_alt.coeff[0][i]));
 		}
 
 		/*                                   Polynome POS gives the position of the errors
@@ -204,7 +204,7 @@ int decoding_H(binmat_t H_alt, gf* c, gf* error, gf* code_word) {
 		pos = poly_alloc(st / 2);
 		j = 0;
 		for (i = 0; i < code_length; i++) {
-			if ((ver[i] != 0) && (poly_eval(sigma, gf_Inv(ver[i])) == 0)) {
+			if ((ver[i] != 0) && (poly_eval(sigma, gf_inv(ver[i])) == 0)) {
 				pos->coeff[j] = i;
 				j += 1;
 			}
@@ -227,14 +227,14 @@ int decoding_H(binmat_t H_alt, gf* c, gf* error, gf* code_word) {
 				for (i = 0; i <= pos->deg; i++) {
 					if (i != j) {
 						tmp = gf_Mult(ver[pos->coeff[i]],
-								gf_Inv(ver[pos->coeff[j]]));
+							      gf_inv(ver[pos->coeff[j]]));
 						tmp = gf_add(1, tmp);
 						pol = gf_Mult(pol, tmp);
 					}
 				}
-				gf o = poly_eval(omega, gf_Inv(ver[pos->coeff[j]]));
+				gf o = poly_eval(omega, gf_inv(ver[pos->coeff[j]]));
 				tmp1 = gf_Mult(H_alt.coeff[0][pos->coeff[j]], pol);
-				app->coeff[k] = gf_Mult(o, gf_Inv(tmp1));
+				app->coeff[k] = gf_Mult(o, gf_inv(tmp1));
 			}
 			poly_calcule_deg(app);
 

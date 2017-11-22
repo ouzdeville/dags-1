@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "rng.h"
 #include "gf.h"
 #include "param.h"
 

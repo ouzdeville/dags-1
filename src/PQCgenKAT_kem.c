@@ -73,6 +73,7 @@ int main() {
 	done = 0;
 	int counter = 0;
 	do {
+		done = 1;
 		printf("Starting iteration: %d\n", counter);
 		if (FindMarker(fp_req, "count = "))
 			fscanf(fp_req, "%d", &count);
