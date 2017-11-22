@@ -1,8 +1,8 @@
 # Project: shrivastava
 # Makefile created by ouzdeville
 CC       = gcc
-OBJ      = gf.o poly.o matrix.o fichier.o key_gen.o encapsulation.o decapsulation.o util.o sponge.o decoding.o kem.o rng.o PQCgenKAT_kem.o  
-LINKOBJ  = gf.o poly.o matrix.o fichier.o key_gen.o encapsulation.o decapsulation.o util.o sponge.o decoding.o kem.o rng.o PQCgenKAT_kem.o
+OBJ      = gf.o poly.o matrix.o fichier.o key_gen.o encapsulation.o decapsulation.o util.o decoding.o kem.o rng.o PQCgenKAT_kem.o  
+LINKOBJ  = gf.o poly.o matrix.o fichier.o key_gen.o encapsulation.o decapsulation.o util.o decoding.o kem.o rng.o PQCgenKAT_kem.o
 LIBS     = -L/usr/lib -L. -lssl -lcrypto -lkeccak
 INCS     = 
 CXXINCS  = 
@@ -33,8 +33,6 @@ util.o: util.c
 encapsulation.o: encapsulation.c
 	$(CC) -c encapsulation.c -o encapsulation.o $(CFLAGS)
 
-sponge.o: sponge.c
-	$(CC) -c sponge.c -o sponge.o $(CFLAGS)
 
 decapsulation.o: decapsulation.c
 	$(CC) -c decapsulation.c -o decapsulation.o $(CFLAGS)
