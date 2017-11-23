@@ -13,7 +13,7 @@ int encapsulation(const unsigned char *pk, unsigned char *ct, unsigned char *ss)
 	unsigned char *m, *d, *rho, *sigma, *error_array, *hash_sigma, *r, *m_extend,
 			*sigma_extend;
 	gf *c, *u, *dd;
-	const unsigned char *custom = "DAGs"; // customization = "DAGs";
+	const unsigned char *custom = (unsigned char *)"DAGs"; // customization = "DAGs";
 	int i;
 	int test; // Catch error 
 	/*
