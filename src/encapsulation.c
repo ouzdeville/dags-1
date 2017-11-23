@@ -10,27 +10,24 @@
 int encapsulation(const unsigned char *pk, unsigned char *ct, unsigned char *ss) {
 	gf_init(6);
 
-	unsigned char *m, *d, *rho, *sigma, *error_array, *hash_sigma, *r, *m_extend,
-			*sigma_extend;
+	unsigned char *m, *d, *rho, *sigma, *error_array, *hash_sigma, *r;
 	gf *c, *u, *dd;
 	const unsigned char *custom = (unsigned char *)"DAGs"; // customization = "DAGs";
 	int i;
-	int test; // Catch error 
+	int test; // Catch error
+
 	/*
 	 * Memory's allocation
 	 */
 	d = (unsigned char*) calloc(k_prime, sizeof(unsigned char));
-	m = (unsigned char*) calloc(k_prime, sizeof(unsigned char));
+	//m = (unsigned char*) calloc(k_prime, sizeof(unsigned char));
 	rho = (unsigned char*) calloc(k_sec, sizeof(unsigned char));
 	sigma = (unsigned char*) calloc(code_dimension - k_sec,
 			sizeof(unsigned char));
-
-	hash_sigma = (unsigned char*) calloc(code_length, sizeof(unsigned char));//Should remove
+	hash_sigma = (unsigned char*) calloc(code_length, sizeof(unsigned char));
 	u = (gf*) calloc(code_dimension, sizeof(gf));
-	r = (unsigned char*) calloc(code_dimension, sizeof(unsigned char));//Should remove
-	sigma_extend = (unsigned char*) calloc(code_dimension,//Should remove
-			sizeof(unsigned char));
-	dd = (gf*) calloc(k_prime, sizeof(gf));
+	r = (unsigned char*) calloc(code_dimension, sizeof(unsigned char));
+	dd = (gf*) calloc(k_prime, sizeof(gf)); //TODO consider removing dd and using d instead
 
 	/*
 	 * Step_1:  Choose randomly  m ←  F_q^k, m is seen as a sequence of k_prime integer
@@ -38,7 +35,6 @@ int encapsulation(const unsigned char *pk, unsigned char *ct, unsigned char *ss)
 	 */
 
 	m = random_m(k_prime, gf_card_sf);
-	m_extend = extend(m, k_prime, code_dimension); // TODO: REMOVE
 
 	/*
 	 * Step_2:  Compute r = G(m) and d = H(m) with  G(x) = sponge(x,k) and
@@ -51,10 +47,10 @@ int encapsulation(const unsigned char *pk, unsigned char *ct, unsigned char *ss)
 	test = KangarooTwelve(m, k_prime, r, code_dimension, custom, cus_len);
 	assert(test == 0); // Catch Error
 
-	for (i = 0; i < code_dimension; i++)
-		// Optimize modulo
-		//r[i] = r[i] % gf_card_sf;
-		r[i] = r[i] & (gf_card_sf - 1);
+//	for (i = 0; i < code_dimension; i++)
+//		// Optimize modulo
+//		//r[i] = r[i] % gf_card_sf;
+//		r[i] = r[i] & gf_ord_sf;
 
 	// Replace by KangarooTwelve
 	// d = sponge(m, k_prime);
@@ -66,7 +62,7 @@ int encapsulation(const unsigned char *pk, unsigned char *ct, unsigned char *ss)
 	for (i = 0; i < k_prime; i++)
 		// Optimize modulo 
 		//dd[i]= (unsigned char)(d[i] % gf_card_sf);
-		dd[i] = (unsigned char)(d[i] & (gf_card_sf -1));
+		dd[i] = (unsigned char)(d[i] & gf_ord_sf);
 
 	free(d);
 
@@ -80,11 +76,11 @@ int encapsulation(const unsigned char *pk, unsigned char *ct, unsigned char *ss)
 		if (i < k_sec)
 			// Optimize modulo
 			// rho[i] = (unsigned char)(r[i] % gf_card_sf);  //rho recovery
-			rho[i] = (unsigned char)(r[i] & (gf_card_sf-1));	  //rho recovery
+			rho[i] = (unsigned char)(r[i] & gf_ord_sf);	  //rho recovery
 		else
 			// Optimize modulo
 			// sigma[i - k_sec] = (unsigned char)(r[i] % gf_card_sf); // sigma recovery
-			sigma[i - k_sec] = (unsigned char)(r[i] & (gf_card_sf-1)); // sigma recovery
+			sigma[i - k_sec] = (unsigned char)(r[i] & gf_ord_sf); // sigma recovery
 	}
 
 	for (i = 0; i < code_dimension; i++) {
@@ -95,15 +91,13 @@ int encapsulation(const unsigned char *pk, unsigned char *ct, unsigned char *ss)
 			u[i] = ((unsigned char)m[i - k_sec]);
 		}
 	}
+	free(r);
 	free(rho);
 
 
 	/*
 	 * Step_4: Generate error vector e of length n and weight w from sigma
-	 * TODO verify that extend is supposed to be size code_dimension or code_length
-	 * originally code_dimension
 	 */
-	sigma_extend = extend(sigma, k_prime, code_dimension); // TODO: REMOVE
 	// Replace by KangarooTwelve
 	// hash_sigma = sponge(sigma_extend, code_length);
 	// sigma: input type unsigned char len k_prime | hash_sigma: output type unsigned char len code_length
@@ -114,7 +108,7 @@ int encapsulation(const unsigned char *pk, unsigned char *ct, unsigned char *ss)
 
 //           //cfile_vec_char("erreur.txt", code_length, e);
 	free(sigma);
-	free(sigma_extend);
+	free(hash_sigma);
 
 	/*
 	 * Step_5: Recovery of G and Compute c = uG + e
@@ -156,7 +150,6 @@ int encapsulation(const unsigned char *pk, unsigned char *ct, unsigned char *ss)
 	for (i = 0; i < ss_lenght; i++){
 		ss[i] = K[i];
 	}
-	free(m_extend);
 	free(K);
 	free(m);
 	return 0;

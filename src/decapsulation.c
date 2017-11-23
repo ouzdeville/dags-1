@@ -50,8 +50,6 @@ decapsulation (unsigned char *ss, const unsigned char *ct,
   /*
    * Construction of alternant matrix H_alt from H and u
    */
-
-  H_alt = mat_ini (pol_deg * (order), code_length);
   H_alt = alternant_matrix (H, u);
   mat_free(H);
   free(u);

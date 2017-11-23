@@ -115,12 +115,9 @@ poly_eval_aux (gf * coeff, gf a, int d)
     }
   return b;
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-//                               Returns the multiplication of p by q
-//
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+//Returns the multiplication of p by q
 poly_t
 poly_mul (poly_t p, poly_t q)
 {
@@ -132,14 +129,17 @@ poly_mul (poly_t p, poly_t q)
   dp = poly_deg(p);
   dq = poly_deg(q);
   r = poly_alloc (dp + dq);
-  for (i = 0; i <= dp; ++i)
-
-    for (j = 0; j <= dq; ++j)
+  for (i = 0; i <= dp; ++i){
+    for (j = 0; j <= dq; ++j){
       poly_addto_coeff(r, i + j, gf_mult(poly_coeff(p,i),poly_coeff(q,j)));
+    }
+  }
   poly_calcule_deg (r);
 
-  return (r);
+  return r;
 }
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 //                        Returns the addition of p by q in r (used to avoid memory leak)
@@ -245,19 +245,17 @@ poly_quo (poly_t p, poly_t d)
   quo = poly_alloc (dp - dd);
   poly_set_deg(quo, dp - dd);
   a = gf_inv (poly_coeff(d, dd));
-  for (i = dp; i >= dd; --i)
-    {
+  for (i = dp; i >= dd; --i){
       b = gf_mult(a, poly_coeff(rem, i));
       poly_set_coeff(quo, i - dd, b);
-      if (b != 0)
-	{
-	  poly_set_coeff(rem, i, 0);
-	  for (j = i - 1; j >= i - dd; --j)
-	    poly_addto_coeff(rem, j, gf_mult(b, poly_coeff(d, dd - i + j)));
-	}
+      if (b != 0){
+      	poly_set_coeff(rem, i, 0);
+      	for (j = i - 1; j >= i - dd; --j){
+      		poly_addto_coeff(rem, j, gf_mult(b, poly_coeff(d, dd - i + j)));
+      	}
+      }
     }
   poly_free (rem);
-
   return quo;
 }
 
@@ -486,8 +484,8 @@ poly_srivastava (gf * W, int s, int t)
 	}
     }
 
-  return poly_de_goppa_srivasta;
   poly_free (poly1);
+  return poly_de_goppa_srivasta;
 }
 
 void

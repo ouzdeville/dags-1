@@ -8,9 +8,9 @@
 
 //Bulding of decoding fuction
 
-/*************************************************************************************************************
- * The polynome_syndrome_1 function compute the syndrome S in polynomial form with inputs a short IV and a Parity matrix H                           *
- **************************************************************************************************************
+/*
+ * The polynome_syndrome_1 function compute the syndrome S in polynomial form
+ *  with inputs a short IV and a Parity matrix H
  */
 void polynome_syndrome_1(binmat_t H, gf * mot, poly_t S) {
 	int i, j;
@@ -26,24 +26,23 @@ void polynome_syndrome_1(binmat_t H, gf * mot, poly_t S) {
 	poly_calcule_deg(S);
 }
 
-/***************************************************************************************************************
-              The alternant_matrix function transform a Generalized Srivastava cheek matrix H in alternant form
-***************************************************************************************************************/
-
+/*
+ * The alternant_matrix function transform a Generalized Srivastava cheek
+ * matrix H in alternant form
+ */
 binmat_t alternant_matrix(binmat_t H, gf * u) {
 	gf_init(6);
 	int s = (order);
 	int t = pol_deg, i, j, k;
 	int st = s * t;
 	poly_t Srivastava;
+	poly_t *g, pol1, pol2, temp;
 	Srivastava = poly_alloc(st);
-	binmat_t H_alter, H_alt;
+	binmat_t H_alter, H_alt, B, C;;
 
-	/*                                      Construction of the First intermediate matrix
-	 ***************************************************************************************************************/
+	//Construction of the First intermediate matrix
 //printf("\n   Construction of the First intermediate matrix \n");
 	H_alter = mat_ini(st, code_length);
-	H_alt = mat_ini(st, code_length);
 	for (i = 0; i < s; i++) {
 		for (k = 0; k < t; k++) {
 			for (j = 0; j < code_length; j++) {
@@ -52,22 +51,20 @@ binmat_t alternant_matrix(binmat_t H, gf * u) {
 		}
 	}
 
-	/*                                      Construction of Srivastava's Polynome
-	 ***************************************************************************************************************/
+	//Construction of Srivastava's Polynome
 //printf("\n  Construction of Srivastava's Polynome  \n");
 	Srivastava = poly_srivastava(u, s, t);
 
-	/*                                      Construction of the Second intermediate matrix
-	 ***************************************************************************************************************/
+	//Construction of the Second intermediate matrix
 //printf("\n   Construction of the Second intermediate matrix \n");
-	binmat_t C;
+
 	C = mat_ini(st, st);
-	poly_t * g;
+
 	g = (poly_t *) malloc(st * sizeof(poly_t));
 	for (i = 0; i < st; i++) {
 		g[i] = poly_alloc(st - 1);
 	}
-	poly_t pol1, pol2;
+
 	pol1 = poly_alloc(st - 1);
 	pol2 = poly_alloc(1);
 
@@ -76,11 +73,19 @@ binmat_t alternant_matrix(binmat_t H, gf * u) {
 		pol2->coeff[0] = u[i];
 		pol2->coeff[1] = 1;
 		for (k = 0; k < pol_deg; k++) {
-			pol1 = poly_mul(pol1, pol2);
-			g[i * t + k] = poly_quo(Srivastava, pol1);
+			//Store in temp and free to prevent memory leaks
+//			pol1 = poly_mul(pol1, pol2);
+			temp = poly_mul(pol1, pol2);
+			poly_free(pol1);
+			pol1 = temp;
+			//g[i * t + k] = poly_quo(Srivastava, pol1);
+			 temp = poly_quo(Srivastava, pol1);
+			 free(g[i * t + k]);
+			 g[i * t + k] = temp;
 			poly_calcule_deg(g[i * t + k]);
 		}
 	}
+	free(Srivastava);
 	for (i = 0; i < st; i++) {
 		for (j = 0; j < g[i]->deg + 1; j++) {
 			C.coeff[i][j] = g[i]->coeff[j];
@@ -88,27 +93,30 @@ binmat_t alternant_matrix(binmat_t H, gf * u) {
 	}
 	poly_free(pol1);
 	poly_free(pol2);
+	for(i = 0; i < st; i++){
+		poly_free(g[i]);
+	}
+	free(g);
 
-	/*                                      Construction of the Third intermediate matrix
-	 ***************************************************************************************************************/
+	//Construction of the Third intermediate matrix
 //printf("\n  Construction of the Third intermediate matrix \n");
-	binmat_t B;
 	B = mat_ini_Id(st);
 	inverse_matrice(C, B);
+	mat_free(C);
 
-	/*                                  And finally construction of the matrix of Srivastion
-	 ***************************************************************************************************************/
+	//And finally construction of the matrix of Srivastion
 //printf("\n And finally construction of the matrix of Srivastion \n");
+	H_alt = mat_ini(st, code_length);
 	H_alt = produit_matrix(B, H_alter);
 	//aff_mat(H_alt);
 	mat_free(H_alter);
 	return H_alt;
 }
 
-/***************************************************************************************************************
- * ALTERNANT DECODING:                                                                                          *
- * Take as input the matrix in alternant form just created (it was Halt) and the received word c.               *
- ****************************************************************************************************************/
+/*
+ * ALTERNANT DECODING: Take as input the matrix in alternant form just created
+ * (it was Halt) and the received word c.               *
+ */
 
 int decoding_H(binmat_t H_alt, gf* c, gf* error, gf* code_word) {
 		gf_init(6);
@@ -116,8 +124,7 @@ int decoding_H(binmat_t H_alt, gf* c, gf* error, gf* code_word) {
 	int s = (order), t = pol_deg;
 	int st = s * t;
 
-	/*                                      compute Syndrome normally
-	 ***************************************************************************************************************/
+	//Compute Syndrome normally
 	poly_t Syndrome = poly_alloc(st - 1);
 	polynome_syndrome_1(H_alt, c, Syndrome);
 	//aff_poly(Syndrome);
@@ -126,9 +133,7 @@ int decoding_H(binmat_t H_alt, gf* c, gf* error, gf* code_word) {
 		return -1;
 	} else {
 
-		/*                                    Resolution of the key equation
-		 ***************************************************************************************************************/
-
+		//Resolution of the key equation
 		poly_t omega, sigma, x_st, re, copy_synd, uu, u, quotient, resto, app;
 		omega = poly_alloc(st / 2);
 		sigma = poly_alloc(st / 2);
@@ -175,8 +180,7 @@ int decoding_H(binmat_t H_alt, gf* c, gf* error, gf* code_word) {
 
 		}
 
-		/*                  Then we find error locator poly (sigma) and error evaluator poly (omega)
-		 ***************************************************************************************************************/
+		//Then we find error locator poly (sigma) and error evaluator poly (omega)
 		gf delta;
 		delta = gf_inv(poly_eval(u, 0));
 		poly_t pol;
@@ -190,16 +194,14 @@ int decoding_H(binmat_t H_alt, gf* c, gf* error, gf* code_word) {
 		poly_calcule_deg(omega);
 		poly_calcule_deg(sigma);
 
-		/*                                                 Support
-		 ***************************************************************************************************************/
+		//Support
 		gf * ver;
 		ver = (gf*) calloc(code_length, sizeof(gf));
 		for (i = 0; i < code_length; i++) {
 			ver[i] = gf_mult(H_alt.coeff[1][i], gf_inv(H_alt.coeff[0][i]));
 		}
 
-		/*                                   Polynome POS gives the position of the errors
-		 ***************************************************************************************************************/
+		//Polynome POS gives the position of the errors
 		poly_t pos;
 		pos = poly_alloc(st / 2);
 		j = 0;
@@ -211,8 +213,7 @@ int decoding_H(binmat_t H_alt, gf* c, gf* error, gf* code_word) {
 		}
 		poly_calcule_deg(pos);
 
-		/*                                    Element for determining the value of errors
-		 ***************************************************************************************************************/
+		//Element for determining the value of errors
 		if (pos->deg == -1) {
 			return -1;
 		} else {
@@ -238,8 +239,7 @@ int decoding_H(binmat_t H_alt, gf* c, gf* error, gf* code_word) {
 			}
 			poly_calcule_deg(app);
 
-			/*                                   Determining the value of the errors
-			 ***************************************************************************************************************/
+			//Determining the value of the errors
 			gf alpha;
 			alpha = gf_pow(64, 65);
 
@@ -265,15 +265,13 @@ int decoding_H(binmat_t H_alt, gf* c, gf* error, gf* code_word) {
 				//printf(" %d " ,valeur_erreurs->coeff[i]);
 			}
 
-			/*                                       Reconstruction of the error vector
-			 ***************************************************************************************************************/
+			//Reconstruction of the error vector
 			for (i = 0; i <= pos->deg; i++) {
 				error[pos->coeff[i]] = valeur_erreurs->coeff[i];
 				//printf(" %d ",error[i]);
 			}
 
-			/*                                        Reconstruction of code_word
-			 ***************************************************************************************************************/
+			//Reconstruction of code_word
 			for (i = 0; i < code_length; i++) {
 				code_word[i] = c[i] ^ error[i];
 				//printf(" %d ",code_word[i]);

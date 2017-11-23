@@ -715,29 +715,26 @@ inverse_matrice (binmat_t A, binmat_t S)
 
       //Here we do the elimination on column i + n-k
       gf piv_align;
-      for (l = 0; l < k; l++)
-	{
-	  if (l == i)
-	    {
+      for (l = 0; l < k; l++){
+      	if (l == i){
 	      continue;
-	    }
-	  if (H.coeff[l][i])
-	    {
-	      piv_align = H.coeff[l][i];
+      	}
+      	if (H.coeff[l][i]){
+      		piv_align = H.coeff[l][i];
 
-	      for (j = 0; j < n; j++)
-		{
-		  H.coeff[l][j] = H.coeff[l][j]
-		      ^ (gf_mult(piv_align, H.coeff[i][j]));
-		  S.coeff[l][j] = S.coeff[l][j]
-		      ^ (gf_mult(piv_align, S.coeff[i][j]));
-		}
+      		for (j = 0; j < n; j++){
+      			H.coeff[l][j] = H.coeff[l][j] ^
+      					(gf_mult(piv_align, H.coeff[i][j]));
+      			S.coeff[l][j] = S.coeff[l][j] ^
+      					(gf_mult(piv_align, S.coeff[i][j]));
+      		}
 
-	    }
+      	}
 
-	}
+      }
 
     }
+  mat_free(H);
 
   return 1;
 
