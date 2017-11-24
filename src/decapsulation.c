@@ -132,8 +132,7 @@ decapsulation (unsigned char *ss, const unsigned char *ct,
   //d1 = sponge (m1, k_prime);
   test = KangarooTwelve (m1, k_prime, d1, k_prime, custom, cus_len);
   assert (test == 0); // Catch Error
-  //TODO remove. Fairly certain that this is not doing anything because
-  //d1 is already a unsigned char*
+
   for (i = 0; i < k_prime; i++){
     d1[i] = d1[i] % gf_card_sf;
   }
@@ -220,5 +219,5 @@ decapsulation (unsigned char *ss, const unsigned char *ct,
   return 0;
 
 }
-/*END**/
+/*END*/
 

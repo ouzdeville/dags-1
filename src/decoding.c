@@ -83,7 +83,7 @@ binmat_t alternant_matrix(binmat_t H, gf * u) {
 			poly_calcule_deg(g[i * pol_deg + k]);
 		}
 	}
-	free(Srivastava);
+	poly_free(Srivastava);
 	for (i = 0; i < st; i++) {
 		for (j = 0; j < g[i]->deg + 1; j++) {
 			C.coeff[i][j] = g[i]->coeff[j];
@@ -151,7 +151,7 @@ int decoding_H(binmat_t H_alt, gf* c, gf* error, gf* code_word) {
 
 	copy_synd = poly_copy(Syndrome);//TODO use Syndrome in place of copy_synd
 	poly_calcule_deg(copy_synd);
-	free(Syndrome);
+	poly_free(Syndrome);
 
 	resto = poly_copy(re);
 	dr = copy_synd->deg;
@@ -274,10 +274,6 @@ int decoding_H(binmat_t H_alt, gf* c, gf* error, gf* code_word) {
 	}
 
 	return 1;
-
-
-
-
 
 }
 
