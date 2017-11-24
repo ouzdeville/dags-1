@@ -23,7 +23,7 @@ decapsulation (unsigned char *ss, const unsigned char *ct,
   gf * u, *v, *z;
   gf *e, *mot, *c;
   unsigned char *m1, *rho1;
-  unsigned char *r1, *d1, *rho2, *sigma, *e2, *hash_sigma1;
+  unsigned char *r1, *d1, *rho2, *sigma, *e2, *hash_sigma;
   unsigned char *d, *e_prime;
   unsigned char *K;
   binmat_t H, H_alt;
@@ -118,8 +118,7 @@ decapsulation (unsigned char *ss, const unsigned char *ct,
   // Replace by KangarooTwelve
   // r = sponge(m_extend, code_dimension);
   // m: input type unsigned char len k_prime | r: output type unsigned char len code_dimesion
-  test = KangarooTwelve (m1, k_prime, r1, code_dimension, custom,
-  cus_len);
+  test = KangarooTwelve (m1, k_prime, r1, code_dimension, custom, cus_len);
   assert (test == 0); // Catch Error
 
   //Already performed in copy to rho2 and sigma
@@ -163,19 +162,19 @@ decapsulation (unsigned char *ss, const unsigned char *ct,
    * Step_6 of the decapasulation: Generate error vector e2 of length n and
    * weight n0_w from sigma1
    */
-  e2 = (unsigned char*) calloc (code_length, sizeof(unsigned char));
-  hash_sigma1 = (unsigned char*) calloc (code_length,	sizeof(unsigned char));
+  hash_sigma = (unsigned char*) calloc (code_length,	sizeof(unsigned char));
 
   //Hashing sigma_extend by using sponge SHA-512 function.
   // hash_sigma1 = sponge (sigma_extend, code_length);
-  test = KangarooTwelve (sigma, k_prime, hash_sigma1, code_length,
+  test = KangarooTwelve (sigma, k_prime, hash_sigma, code_length,
   		custom, cus_len);
   assert (test == 0); // Catch Error
   free (sigma);
 
   //Generate error vector e2 of length code_length and weight n0_w from
   //hash_sigma1 by using random_e function.
-  e2 = random_e (code_length, gf_card_sf, n0_w, hash_sigma1);
+  e2 = random_e (code_length, gf_card_sf, n0_w, hash_sigma);
+  free(hash_sigma);
 
 
   /*

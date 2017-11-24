@@ -464,9 +464,9 @@ poly_syndrome_init (poly_t generator, gf *support, int n)
 poly_t
 poly_srivastava (gf * W, int s, int t)
 {
-
-  poly_t poly_de_goppa_srivasta, poly1;
+  poly_t poly_de_goppa_srivasta, poly1, temp;
   int i, j;
+
   poly_de_goppa_srivasta = poly_alloc (s * t);
   poly_set_to_zero (poly_de_goppa_srivasta);
   poly_de_goppa_srivasta->coeff[0] = 1;
@@ -474,17 +474,18 @@ poly_srivastava (gf * W, int s, int t)
   poly1 = poly_alloc (1);
   poly_set_to_zero (poly1);
 
-  for (i = 0; i < s; i++)
-    {
+  for (i = 0; i < s; i++){
       poly1->coeff[1] = 1;
       poly1->coeff[0] = W[i];
-      for (j = 0; j < t; j++)
-	{
-	  poly_de_goppa_srivasta = poly_mul (poly_de_goppa_srivasta, poly1);
-	}
-    }
+      for (j = 0; j < t; j++){
+      	//poly_de_goppa_srivasta = poly_mul (poly_de_goppa_srivasta, poly1);
+      	temp = poly_mul(poly_de_goppa_srivasta, poly1);
+      	poly_free(poly_de_goppa_srivasta);
+      	poly_de_goppa_srivasta = temp;
+      }
+  }
 
-  poly_free (poly1);
+  poly_free(poly1);
   return poly_de_goppa_srivasta;
 }
 
