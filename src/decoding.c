@@ -256,7 +256,6 @@ int decoding_H(binmat_t H_alt, gf* c, gf* error, gf* code_word) {
 		error_values->coeff[i] = gf_Pow_subfield(2, k);
 		//printf(" %d " ,valeur_erreurs->coeff[i]);
 	}
-	printf("Value of i %d\n", i);
 	poly_free(app);
 	free(LOG_12);
 	//Reconstruction of the error vector
@@ -264,7 +263,6 @@ int decoding_H(binmat_t H_alt, gf* c, gf* error, gf* code_word) {
 		error[pos->coeff[i]] = error_values->coeff[i];
 		//printf(" %d ",error[i]);
 	}
-	printf("value of 2 i %d\n",i);
 	poly_free(pos);
 	poly_free(error_values);
 	//Reconstruction of code_word

@@ -35,9 +35,9 @@ main ()
   unsigned char seed[48];
   unsigned char entropy_input[48];
   unsigned char ct[CRYPTO_CIPHERTEXTBYTES], ss[CRYPTO_BYTES], ss1[CRYPTO_BYTES];
-  int count;
-  int done;
-  unsigned char pk[CRYPTO_PUBLICKEYBYTES], sk[CRYPTO_SECRETKEYBYTES];
+  int count = 0;
+  unsigned char pk[CRYPTO_PUBLICKEYBYTES];
+  unsigned char *sk;
   int ret_val;
 
   // Create the REQUEST file
@@ -78,10 +78,10 @@ main ()
     }
 
   fprintf (fp_rsp, "# %s\n\n", CRYPTO_ALGNAME);
-  done = 0;
   int counter = 0;
   do
     {
+      sk = malloc(CRYPTO_SECRETKEYBYTES);
       printf ("Starting iteration: %d\n", counter);
       if (counter == 22)
 	{
@@ -139,7 +139,7 @@ main ()
       fprintBstr (fp_rsp, "ss = ", ss, CRYPTO_BYTES);
 
       fprintf (fp_rsp, "\n");
-      uint16_t initial_key_dec = rdtsc ();
+      uint64_t initial_key_dec = rdtsc ();
       ret_val = crypto_kem_dec (ss1, ct, sk);
       uint64_t final_dec = rdtsc ();
 
@@ -160,7 +160,7 @@ main ()
 	  return KAT_CRYPTO_FAILURE;
 	}
       counter++;
-
+      free(sk);
     }
   while (counter < 100);
 

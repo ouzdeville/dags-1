@@ -261,7 +261,7 @@ key_pair (unsigned char *pk, unsigned char *sk)
 {
   gf * u, *v, *w, *z;
   int return_value;
-  binmat_t H, H_syst;
+  binmat_t H, H_syst, H_alt;
   u = (gf*) calloc (order, sizeof(gf));
   v = (gf*) calloc (code_length, sizeof(gf));
   w = (gf*) calloc (code_length, sizeof(gf));
@@ -275,6 +275,8 @@ key_pair (unsigned char *pk, unsigned char *sk)
   H = mat_ini (pol_deg * (order), code_length);
   // construction matrix H
   secret_matrix (H, u, v, z);
+  free (v);
+  free (z);
 
   //cfile_matrix_F12("secret_matrix.txt", H.rown, H.coln, H);
 
@@ -294,17 +296,15 @@ key_pair (unsigned char *pk, unsigned char *sk)
    * H_syst is in the form (G | I) we determine G and store
    * it  in the file "pubkey.text" as  the public key
    */
-
-//G=mat_ini(code_dimension,code_length-code_dimension);
-//G_mat(G,H_syst);
-//set_public_key( G,pk);
   store_pk (H_syst, pk);
-  store_sk (u, v, z, sk);
-  free (u);
-  free (v);
-  free (z);
-  mat_free (H);
   mat_free (H_syst);
+
+
+  H_alt = alternant_matrix (H, u);
+  free (u);
+  mat_free (H);
+  store_sk(H_alt, sk);
+  mat_free(H_alt);
   return 0;
 
 }

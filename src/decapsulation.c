@@ -20,40 +20,17 @@ decapsulation (unsigned char *ss, const unsigned char *ct,
   int i, test, decode_value;
   gf_init (6); //initialization of Log Antilog table
   const unsigned char *custom = (unsigned char*)"DAGs"; // customization = "DAGs";
-  gf * u, *v, *z;
   gf *e, *mot, *c;
   unsigned char *m1, *rho1;
   unsigned char *r1, *d1, *rho2, *sigma, *e2, *hash_sigma;
   unsigned char *d, *e_prime;
   unsigned char *K;
-  binmat_t H, H_alt;
+  binmat_t H_alt;
 
   /*
-   * Recovery of the secret elements u, v and z from the secret key (sk)
+   * Read in the alternative matrix from the secret key
    */
-
-
-  u = (gf*) calloc (order, sizeof(gf));
-  v = (gf*) calloc (code_length, sizeof(gf));
-  z = (gf*) calloc (n0_val, sizeof(gf));
-  set_uvz (u, v, z, sk);
-
-  /*
-   * Construction of secret matrix H from u, v and z
-   */
-
-  H = mat_ini (pol_deg * (order), code_length);
-  secret_matrix (H, u, v, z);
-  free(v);
-  free(z);
-
-  /*
-   * Construction of alternant matrix H_alt from H and u
-   */
-  H_alt = alternant_matrix (H, u);
-  mat_free(H);
-  free(u);
-  //aff_mat(H_alt);
+  H_alt = read_sk(sk);
 
   /*
    * Step_1 of the decapasulation :  Decode the noisy codeword C received as
@@ -121,12 +98,6 @@ decapsulation (unsigned char *ss, const unsigned char *ct,
   test = KangarooTwelve (m1, k_prime, r1, code_dimension, custom, cus_len);
   assert (test == 0); // Catch Error
 
-  //Already performed in copy to rho2 and sigma
-//  for (i = 0; i < code_dimension; i++){
-//  	// Optimize modulo
-//  	//r1[i] = r1[i] % gf_card_sf;
-//    r1[i] = r1[i] & gf_ord_sf;
-//  }
 
   //Compute d1 = H(m1) where H is  sponge SHA-512 function
   //d1 = sponge (m1, k_prime);

@@ -24,9 +24,8 @@ unsigned char* gf_to_char(gf* a, int lenght);
 void recup_pk(const unsigned char * pk,binmat_t G);
 void store_pk(binmat_t M,unsigned char * pk);
 
-void store_sk(gf * u, gf * v, gf * z,unsigned char * sk);
-void set_uvz( gf * u, gf* v, gf * z,const unsigned char * sk );
+void store_sk(binmat_t H_alt, unsigned char * sk);
 
-
+binmat_t read_sk(const unsigned char *sk);
 
 

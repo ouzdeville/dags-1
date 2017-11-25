@@ -53,8 +53,6 @@ int indice_in_vec(unsigned int * v, int j, int size) {
 
 /*random_e **************************************************************************************
  *************************************************************************************************/
-//TODO in this function the value k greatly exceeds the indexes of sigma.
-//How is this actually supposed to work?
 unsigned char* random_e(int size, int q, int w, unsigned char* sigma) {
 	srand(time(0));
 	unsigned char* e = (unsigned char*) calloc(size, sizeof(unsigned char));
@@ -209,7 +207,32 @@ void recup_pk(const unsigned char * pk, binmat_t G) {
 	free(sig);
 }
 
-//TODO remove the intermediate variables
+void store_sk(binmat_t H_alt, unsigned char *sk){
+	unsigned int sk_loc = 0, i;
+	memcpy(sk, &H_alt.rown, sizeof(H_alt.rown));
+	sk_loc += sizeof(H_alt.rown);
+	memcpy(sk + sk_loc, &H_alt.coln, sizeof(H_alt.coln));
+	sk_loc += sizeof(H_alt.coln);
+	for(i = 0; i < H_alt.rown; i++){
+		memcpy(sk + sk_loc, H_alt.coeff[i], H_alt.coln * sizeof(gf));
+		sk_loc += H_alt.coln * sizeof(gf);
+	}
+}
+
+binmat_t read_sk(const unsigned char *sk){
+	unsigned int rown = ((unsigned int*)sk)[0];
+	unsigned int coln = ((unsigned int*)sk)[1];
+	unsigned int sk_loc = 2 * sizeof(unsigned int);
+	unsigned int i;
+	binmat_t H_alt = mat_ini(rown, coln);
+	for(i = 0; i < H_alt.rown; i++){
+		memcpy(H_alt.coeff[i], sk + sk_loc, H_alt.coln * sizeof(gf));
+		sk_loc += H_alt.coln * sizeof(gf);
+	}
+	return H_alt;
+
+}
+/*
 void store_sk(gf * u, gf * v, gf * z, unsigned char * sk) {
 	int i, a = 0;
 	gf c1, c2;
@@ -271,7 +294,8 @@ void store_sk(gf * u, gf * v, gf * z, unsigned char * sk) {
 	//printf(" a +%d \n",a);
 	sk[a] = c;
 }
-
+*/
+/*
 void set_uvz(gf * u, gf* v, gf * z, const unsigned char * sk) {
 	int i, a = 0;
 	unsigned char c;
@@ -328,4 +352,4 @@ void set_uvz(gf * u, gf* v, gf * z, const unsigned char * sk) {
 	z[n0_val - 1] = (c1 << 4) ^ c2;
 
 }
-
+*/
