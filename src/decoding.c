@@ -123,7 +123,7 @@ int decoding_H(binmat_t H_alt, gf* c, gf* error, gf* code_word) {
 	int st = order * pol_deg;
 	poly_t Syndrome;
 	poly_t omega, sigma, re, copy_synd, uu, u, quotient, resto, app, temp;
-	poly_t pol, pos, error_values;
+	poly_t pol, pos;
 	gf delta, * ver, pol_gf, tmp, tmp1, o;
 	gf alpha;
 

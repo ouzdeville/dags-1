@@ -22,9 +22,7 @@ decapsulation (unsigned char *ss, const unsigned char *ct,
   const unsigned char *custom = (unsigned char*)"DAGs"; // customization = "DAGs";
   gf *e, *mot, *c;
   unsigned char *m1, *rho1;
-  unsigned char *r1, *d1, *rho2, *sigma, *e2, *hash_sigma;
-  unsigned char *d, *e_prime;
-  unsigned char *K;
+  unsigned char *r1, *d1, *rho2, *sigma, *e2, *hash_sigma, *e_prime;
   binmat_t H_alt;
 
   /*
@@ -107,7 +105,12 @@ decapsulation (unsigned char *ss, const unsigned char *ct,
   for (i = 0; i < k_prime; i++){
     d1[i] = d1[i] % gf_card_sf;
   }
-
+  //Return -1 if d distinct d1.
+  //d starts at ct+code_length.
+  if(memcmp(ct + code_length, d1, k_prime) != 0){
+  	return -1;
+  }
+  free(d1);
 
   /*
    * Step_5 of the decapasulation: Parse r1 as (rho2||sigma1)
@@ -126,8 +129,15 @@ decapsulation (unsigned char *ss, const unsigned char *ct,
       	//sigma[i - k_sec] = r1[i] % gf_card_sf; // sigma1 recovery
       	sigma[i - k_sec] = r1[i] & gf_ord_sf; // sigma1 recovery
       }
-   }
+  }
+  //Return ⊥ if rho1 distinct rho2
+  if(memcmp(rho1, rho2, k_sec) != 0){
+  	return -1;
+  }
   free(r1);
+  free(rho1);
+  free(rho2);
+
   /*
    * Step_6 of the decapasulation: Generate error vector e2 of length n and
    * weight n0_w from sigma1
@@ -148,44 +158,21 @@ decapsulation (unsigned char *ss, const unsigned char *ct,
 
 
   /*
-   * Step_7 of the decapasulation: Return ⊥ if e_prime distinct e2 or rho1
-   * distinct rho2 or d distinct d1
+   * Step_7 of the decapasulation: Return ⊥ if e_prime distinct e.
    */
-  d = (unsigned char*) calloc (k_prime, sizeof(unsigned char));
-
-
-  //Recovery of “plaintext confirmation” d from ct.
-  for (i = 0; i < k_prime; i++){
-    d[i] = ct[i + code_length];
+  if( memcmp(e_prime, e2, code_length) != 0){
+      return -1;
   }
-
+  free(e_prime);
+  free(e2);
 
   /*
    * Step_7 of the decapasulation: If the previous condition is not satisfied,
    * compute the shared secret ss by using sponge function and extend function
    */
-  if( memcmp(e_prime, e2, code_length) != 0 || memcmp(rho1, rho2, k_sec) != 0 ||
-  		memcmp(d, d1, k_prime) != 0){
-      return -1;
-  }
-  else{
-      K = (unsigned char*) calloc (ss_lenght, sizeof(unsigned char));
-      //unsigned char* K = sponge (m_extend, ss_lenght);
-      test = KangarooTwelve (m1, k_prime, K, ss_lenght, custom, cus_len);
-      assert (test == 0); // Catch Error
-      for (i = 0; i < ss_lenght; i++){
-      	ss[i] = K[i];
-      }
-  }
-  free(rho1);
-  free(rho2);
-  free(d);
-  free(d1);
-  free(e_prime);
-  free(e2);
+  test = KangarooTwelve (m1, k_prime, ss, ss_lenght, custom, cus_len);
+  assert (test == 0); // Catch Error
   free(m1);
-  free (K);
-
 
   return 0;
 
