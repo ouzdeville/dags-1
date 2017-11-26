@@ -31,24 +31,18 @@ void poly_set_to_zero(poly_t p);
 void poly_set(poly_t p, poly_t q);
 poly_t poly_mul(poly_t p, poly_t q);
 void poly_rem(poly_t p, poly_t g);
-void poly_sqmod_init(poly_t g, poly_t * sq);
-void poly_sqmod(poly_t res, poly_t p, poly_t * sq, int d);
-poly_t poly_gcd(poly_t p1, poly_t p2);
 poly_t poly_quo(poly_t p, poly_t d);
 gf poly_eval(poly_t p, gf a);
-int poly_degppf(poly_t g);
-void poly_eeaux(poly_t * u, poly_t * v, poly_t p, poly_t g, int t);
-void aff_poly(poly_t poly);
+//void poly_eeaux(poly_t * u, poly_t * v, poly_t p, poly_t g, int t);
+//void aff_poly(poly_t poly);
 poly_t poly_Div(poly_t a, poly_t b);
 poly_t poly_srivastava(gf *W, int s, int t);
-poly_t * poly_syndrome_init(poly_t generator, gf *support, int n);
-poly_t * poly_sqrtmod_init(poly_t g);
-poly_t poly_randgen_irred(int t, int (*u8rnd)());
+//poly_t * poly_syndrome_init(poly_t generator, gf *support, int n);
 void poly_set_to_unit(poly_t p);
-poly_t deriv(poly_t p);
+//poly_t deriv(poly_t p);
 void poly_add_free(poly_t r, poly_t a, poly_t b);
 
-int Deg_Max(poly_t a, poly_t b);
-void poly_eeaux_new(poly_t  * u, poly_t * v,poly_t *r, poly_t p, poly_t g, int t) ;
+//int Deg_Max(poly_t a, poly_t b);
+//void poly_eeaux_new(poly_t  * u, poly_t * v,poly_t *r, poly_t p, poly_t g, int t) ;
 
 #endif  

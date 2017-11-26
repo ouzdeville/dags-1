@@ -122,9 +122,9 @@ int decoding_H(binmat_t H_alt, const unsigned char *c, unsigned char *error,
 	int * LOG_12;
 	int st = order * pol_deg;
 	poly_t Syndrome;
-	poly_t omega, sigma, re, copy_synd, uu, u, quotient, resto, app, temp;
+	poly_t omega, sigma, re,  uu, u, quotient, resto, app, temp;
 	poly_t pol, pos;
-	gf delta, * ver, pol_gf, tmp, tmp1, o;
+	gf * ver, pol_gf, tmp, tmp1, o;
 	gf alpha;
 
 	//Compute Syndrome normally
@@ -142,26 +142,27 @@ int decoding_H(binmat_t H_alt, const unsigned char *c, unsigned char *error,
 	re = poly_alloc(st);
 	re->coeff[st] = 1;
 	poly_calcule_deg(re);
+	resto = poly_alloc(st);
+	resto->coeff[st] = 1;
+	poly_calcule_deg(resto);
 
+	app = poly_alloc(st);
 	uu = poly_alloc(st);
 	u = poly_alloc(st);
-	poly_set_to_zero(uu);
-	poly_set_to_unit(u);
-	app = poly_alloc(st);
+//	poly_set_to_unit(u);
+	//Set to unit
+	u->coeff[0] = 1;
+	u->deg = 0;
 
-	copy_synd = poly_copy(Syndrome);//TODO use Syndrome in place of copy_synd
-	poly_calcule_deg(copy_synd);
-	poly_free(Syndrome);
 
-	resto = poly_copy(re);
-	dr = copy_synd->deg;
+	dr = Syndrome->deg;
 
 	while (dr >= (st / 2)) {
-		quotient = poly_quo(re, copy_synd);
-		poly_rem(resto, copy_synd);
+		quotient = poly_quo(re, Syndrome);
+		poly_rem(resto, Syndrome);
 
-		poly_set(re, copy_synd);
-		poly_set(copy_synd, resto);
+		poly_set(re, Syndrome);
+		poly_set(Syndrome, resto);
 		poly_set(resto, re);
 
 		poly_set(app, uu);
@@ -171,10 +172,9 @@ int decoding_H(binmat_t H_alt, const unsigned char *c, unsigned char *error,
 		poly_free(u);
 		poly_free(quotient);
 		u = temp;
-		poly_calcule_deg(u);
 		poly_add_free(u, u, app);
-		poly_calcule_deg(copy_synd);
-		dr = copy_synd->deg;
+		poly_calcule_deg(Syndrome);
+		dr = Syndrome->deg;
 	}
 	poly_free(re);
 	poly_free(uu);
@@ -182,18 +182,16 @@ int decoding_H(binmat_t H_alt, const unsigned char *c, unsigned char *error,
 	poly_free(resto);
 
 	//Then we find error locator poly (sigma) and error evaluator poly (omega)
-	delta = gf_inv(poly_eval(u, 0));
 	pol = poly_alloc(0);
-	pol->coeff[0] = delta;
-	poly_calcule_deg(pol);
-	omega = poly_mul(copy_synd, pol);
+	pol->coeff[0] = gf_inv(poly_eval(u, 0));
+	omega = poly_mul(Syndrome, pol);
+	poly_free(Syndrome);
 	sigma = poly_mul(u, pol);
 	poly_free(pol);
 	poly_free(u);
-	poly_free(copy_synd);
 
 	//Support
-	ver = (gf*) calloc(code_length, sizeof(gf));
+	ver = (gf*)malloc(code_length * sizeof(gf));
 	for (i = 0; i < code_length; i++) {
 		ver[i] = gf_mult(H_alt.coeff[1][i], gf_inv(H_alt.coeff[0][i]));
 	}
