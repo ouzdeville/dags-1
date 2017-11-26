@@ -247,24 +247,18 @@ int decoding_H(binmat_t H_alt, gf* c, gf* error, gf* code_word) {
 		LOG_12[tmp] = i;
 	}
 
-	error_values = poly_alloc(pos->deg); //TODO might be able to replace and use just errors instead
 	k = 0;
-
+	//Reconstruction of the error vector
 	for (i = 0; i <= app->deg; i++) {
 		j = LOG_12[app->coeff[i]];
 		k = j / LOG_12[alpha];
-		error_values->coeff[i] = gf_Pow_subfield(2, k);
+		error[pos->coeff[i]] = gf_Pow_subfield(2, k);
 		//printf(" %d " ,valeur_erreurs->coeff[i]);
 	}
 	poly_free(app);
 	free(LOG_12);
-	//Reconstruction of the error vector
-	for (i = 0; i <= pos->deg; i++) {
-		error[pos->coeff[i]] = error_values->coeff[i];
-		//printf(" %d ",error[i]);
-	}
 	poly_free(pos);
-	poly_free(error_values);
+
 	//Reconstruction of code_word
 	for (i = 0; i < code_length; i++) {
 		code_word[i] = c[i] ^ error[i];
