@@ -12,13 +12,12 @@ int weight(unsigned char *r, int size) {
 }
 
 //random_m generate randomly a sequence of size element of F_q
-unsigned char* random_m(int size, int q) {
+unsigned char* random_m(int size) {
 	unsigned char *r = (unsigned char*)malloc(size);
 	int i;
 	randombytes(r, size);
 	for (i = 0; i < size; i++) {
-		//r[i] = (unsigned char) (rand() % q);
-		r[i] = r[i] & gf_ord_sf; //Performs mod
+		r[i] = r[i] & gf_ord_sf;
 	}
 	return r;
 }
@@ -36,7 +35,6 @@ int indice_in_vec(unsigned int * v, int j, int size) {
 
 //random_e
 unsigned char* random_e(int size, int q, int w, unsigned char* sigma) {
-	srand(time(0));
 	unsigned char* e = (unsigned char*) calloc(size, sizeof(unsigned char));
 	unsigned int* v = (unsigned int*) calloc(size, sizeof(unsigned int));
 	int i, j = 0, k = 0, jeton = 0;
@@ -51,8 +49,7 @@ unsigned char* random_e(int size, int q, int w, unsigned char* sigma) {
 		do {
 			jeton = (sigma[k + 1] ^ (sigma[k] << 4)) % size;
 			k++;
-		//} while (indice_in_vec(v, jeton, size) == 1);
-		} while (indice_in_vec(v, jeton, j) == 1); //Only need to j up to j elements
+		} while (indice_in_vec(v, jeton, j + 1) == 1); //Only check j elements
 		v[j] = jeton;
 		e[jeton] = sigma[i] % q;
 		jeton = 0;

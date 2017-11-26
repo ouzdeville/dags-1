@@ -10,7 +10,7 @@
 
 int  weight( unsigned char *r,int size);
 
-unsigned char* random_m(int size, int q);
+unsigned char* random_m(int size);
 
 int indice_in_vec(unsigned int * v, int j, int size);
 

@@ -34,7 +34,7 @@ int encapsulation(const unsigned char *pk, unsigned char *ct, unsigned char *ss)
 	 * modulo 2^6
 	 */
 
-	m = random_m(k_prime, gf_card_sf);
+	m = random_m(k_prime);
 
 	/*
 	 * Step_2:  Compute r = G(m) and d = H(m) with  G(x) = sponge(x,k) and
