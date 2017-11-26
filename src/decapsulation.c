@@ -164,8 +164,8 @@ decapsulation (unsigned char *ss, const unsigned char *ct,
    * Step_7 of the decapasulation: If the previous condition is not satisfied,
    * compute the shared secret ss by using sponge function and extend function
    */
-  if (compare (e_prime, e2, code_length) == 0
-      || compare (rho1, rho2, k_sec) == 0 || compare (d, d1, k_prime) == 0){
+  if( memcmp(e_prime, e2, code_length) != 0 || memcmp(rho1, rho2, k_sec) != 0 ||
+  		memcmp(d, d1, k_prime) != 0){
       return -1;
   }
   else{

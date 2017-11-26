@@ -1,17 +1,7 @@
 #include"util.h"
 #include"gf.h"
 
-unsigned char* extend(unsigned char* m, int size1, int size2) {
-	int i;
-	unsigned char* res = (unsigned char*) calloc(size2, sizeof(unsigned char));
-	for (i = 0; i < size1; i++){
-		res[i] = m[i];
-	}
-	return res;
-}
-
-/*weight computes the weight of a sequence of elements of type unsigned char***********************
- *************************************************************************************************/
+//weight computes the weight of a sequence of elements of type unsigned char
 int weight(gf* r, int size) {
 	int i = 0, w = 0;
 	for (i = 0; i < size; i++) {
@@ -20,39 +10,31 @@ int weight(gf* r, int size) {
 	}
 	return w;
 }
-//*END**********************************************************************************************/
 
-/*random_m generate randomly a sequence of size element of F_q*************************************
- *************************************************************************************************/
-
+//random_m generate randomly a sequence of size element of F_q
 unsigned char* random_m(int size, int q) {
-	srand(time(0));
-	unsigned char *r = (unsigned char*) calloc(size, sizeof(unsigned char));
+	unsigned char *r = (unsigned char*)malloc(size);
 	int i;
+	randombytes(r, size);
 	for (i = 0; i < size; i++) {
-		r[i] = (unsigned char) (rand() % q);
+		//r[i] = (unsigned char) (rand() % q);
+		r[i] = r[i] & gf_ord_sf; //Performs mod
 	}
 	return r;
 }
-//*END**********************************************************************************************/
 
-/*indice_in_vec test if element is in tab **********************************************************
- *************************************************************************************************/
-
+//indice_in_vec test if element is in tab
 int indice_in_vec(unsigned int * v, int j, int size) {
 	int i;
 	for (i = 0; i < size; i++) {
 		if (v[i] == j)
 			return 1;
-
 	}
 	return 0;
 
 }
-//*END**********************************************************************************************/
 
-/*random_e **************************************************************************************
- *************************************************************************************************/
+//random_e
 unsigned char* random_e(int size, int q, int w, unsigned char* sigma) {
 	srand(time(0));
 	unsigned char* e = (unsigned char*) calloc(size, sizeof(unsigned char));
@@ -69,8 +51,9 @@ unsigned char* random_e(int size, int q, int w, unsigned char* sigma) {
 		do {
 			jeton = (sigma[k + 1] ^ (sigma[k] << 4)) % size;
 			k++;
-		} while (indice_in_vec(v, jeton, size) == 1);
-		v[i] = jeton;
+		//} while (indice_in_vec(v, jeton, size) == 1);
+		} while (indice_in_vec(v, jeton, j) == 1); //Only need to j up to j elements
+		v[j] = jeton;
 		e[jeton] = sigma[i] % q;
 		jeton = 0;
 		j++;
@@ -78,33 +61,8 @@ unsigned char* random_e(int size, int q, int w, unsigned char* sigma) {
 	free(v);
 	return e;
 }
-//*END**********************************************************************************************/
 
-/*compare******************************************************************************************
- *************************************************************************************************/
-int compare(unsigned char* tab1, unsigned char* tab2, int size) {
-	int i = 0;
-	for (i = 0; i < size; i++) {
-		if (tab1[i] != tab2[i])
-			return 0;
-	}
-	return 1;
-}
-//*END**********************************************************************************************/
-
-/* gf_to_char**************************************************************************************
- *************************************************************************************************/
-unsigned char* gf_to_char(gf* a, int lenght) {
-	int i;
-	unsigned char* b = (unsigned char*) calloc(code_length,
-			sizeof(unsigned char));
-	for (i = 0; i < lenght; i++) {
-		b[i] = a[i];
-	}
-	return b;
-}
-/*END**********************************************************************************************/
-
+//TODO Gustavo can this be simpler like the function for store_sk
 void store_pk(binmat_t M, unsigned char * pk) {
 	int i, j, k, p, d, a = 0;
 	k = code_dimension / (order);
@@ -232,124 +190,3 @@ binmat_t read_sk(const unsigned char *sk){
 	return H_alt;
 
 }
-/*
-void store_sk(gf * u, gf * v, gf * z, unsigned char * sk) {
-	int i, a = 0;
-	gf c1, c2;
-	int order1 = (order);
-	unsigned char c;
-	//printf("La valeur de  a +%d \n",a);
-	for (i = 0; i < ((order1) / 2); i++) {
-		c1 = u[2 * i];
-		c2 = u[2 * i + 1];
-		c = c1 >> 4;
-		sk[a] = c;
-		a += 1;
-		c1 = c1 & 15;
-		c = (c1 << 4) ^ (c2 >> 8);
-		sk[a] = c;
-		a += 1;
-		c = c2 & 255;
-		sk[a] = c;
-		a += 1;
-	}
-//printf("La valeur de  a +%d et i = %d \n",a, i);
-	for (i = 0; i < (code_length / 2); i++) {
-		c1 = v[2 * i];
-		c2 = v[2 * i + 1];
-		c = c1 >> 4;
-		sk[a] = c;
-		a += 1;
-		c1 = c1 & 15;
-		c = (c1 << 4) ^ (c2 >> 8);
-		sk[a] = c;
-		a += 1;
-		c = c2 & 255;
-		sk[a] = c;
-		a += 1;
-	}
-//printf("La valeur de  a +%d \n",a);
-	for (i = 0; i < ((n0_val - 1) / 2); i++) {
-		c1 = z[2 * i];
-		c2 = z[2 * i + 1];
-		c = c1 >> 4;
-		sk[a] = c;
-		a += 1;
-		c1 = c1 & 15;
-		c = (c1 << 4) ^ (c2 >> 8);
-		sk[a] = c;
-		a += 1;
-		c = c2 & 255;
-		sk[a] = c;
-		a += 1;
-	}
-
-	c1 = z[n0_val - 1];
-	c = c1 >> 4;
-	//printf("La valeur de xcvv a +%d \n",a);
-	sk[a] = c;
-
-	a += 1;
-	c = c1 & 15;
-	//printf(" a +%d \n",a);
-	sk[a] = c;
-}
-*/
-/*
-void set_uvz(gf * u, gf* v, gf * z, const unsigned char * sk) {
-	int i, a = 0;
-	unsigned char c;
-	gf c1, c2, c3;
-	int order1 = order;
-	for (i = 0; i < ((order1) / 2); i++) {
-		c = sk[a];
-		c1 = c;
-		a += 1;
-		c = sk[a];
-		c2 = c;
-		a += 1;
-		c = sk[a];
-		c3 = c;
-		a += 1;
-		u[2 * i] = (c1 << 4) ^ (c2 >> 4);
-		c1 = c2 & 15;
-		u[2 * i + 1] = (c1 << 8) ^ c3;
-	}
-	for (i = 0; i < (code_length / 2); i++) {
-		c = sk[a];
-		c1 = c;
-		a += 1;
-		c = sk[a];
-		c2 = c;
-		a += 1;
-		c = sk[a];
-		c3 = c;
-		a += 1;
-		v[2 * i] = (c1 << 4) ^ (c2 >> 4);
-		c1 = c2 & 15;
-		v[2 * i + 1] = (c1 << 8) ^ c3;
-	}
-	for (i = 0; i < ((n0_val - 1) / 2); i++) {
-		c = sk[a];
-		c1 = c;
-		a += 1;
-		c = sk[a];
-		c2 = c;
-		a += 1;
-		c = sk[a];
-		c3 = c;
-		a += 1;
-		z[2 * i] = (c1 << 4) ^ (c2 >> 4);
-		c1 = c2 & 15;
-		z[2 * i + 1] = (c1 << 8) ^ c3;
-	}
-	c = sk[a];
-	a += 1;
-	c1 = c;
-	c = sk[a];
-	a += 1;
-	c2 = c;
-	z[n0_val - 1] = (c1 << 4) ^ c2;
-
-}
-*/
