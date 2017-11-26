@@ -12,14 +12,14 @@
  * The polynome_syndrome_1 function compute the syndrome S in polynomial form
  *  with inputs a short IV and a Parity matrix H
  */
-void polynome_syndrome_1(binmat_t H, gf * mot, poly_t S) {
+void polynome_syndrome_1(binmat_t H, const unsigned char *mot, poly_t S) {
 	int i, j;
 
 	gf tmp;
 	for (j = 0; j < H.rown; j++) {
 		tmp = 0;
 		for (i = 0; i < H.coln; i++) {
-			tmp ^= gf_mult(H.coeff[j][i], mot[i]);
+			tmp ^= gf_mult(H.coeff[j][i], ((gf)mot[i]));
 		}
 		S->coeff[j] = tmp;
 	}
@@ -115,8 +115,8 @@ binmat_t alternant_matrix(binmat_t H, gf * u) {
  * ALTERNANT DECODING: Take as input the matrix in alternate form just created
  * (it was Halt) and the received word c.
  */
-
-int decoding_H(binmat_t H_alt, gf* c, gf* error, gf* code_word) {
+int decoding_H(binmat_t H_alt, const unsigned char *c, unsigned char *error,
+		unsigned char *code_word) {
 	gf_init(6);
 	int i, k, j, dr;
 	int * LOG_12;
@@ -252,7 +252,7 @@ int decoding_H(binmat_t H_alt, gf* c, gf* error, gf* code_word) {
 	for (i = 0; i <= app->deg; i++) {
 		j = LOG_12[app->coeff[i]];
 		k = j / LOG_12[alpha];
-		error[pos->coeff[i]] = gf_Pow_subfield(2, k);
+		error[pos->coeff[i]] = (unsigned char)(gf_Pow_subfield(2, k));
 		//printf(" %d " ,valeur_erreurs->coeff[i]);
 	}
 	poly_free(app);
@@ -261,7 +261,7 @@ int decoding_H(binmat_t H_alt, gf* c, gf* error, gf* code_word) {
 
 	//Reconstruction of code_word
 	for (i = 0; i < code_length; i++) {
-		code_word[i] = c[i] ^ error[i];
+		code_word[i] = (c[i] ^ error[i]) & gf_ord_sf;
 		//printf(" %d ",code_word[i]);
 	}
 

@@ -8,7 +8,7 @@
 
 
 
-int  weight( gf* r,int size);
+int  weight( unsigned char *r,int size);
 
 unsigned char* random_m(int size, int q);
 

@@ -2,7 +2,7 @@
 #include"gf.h"
 
 //weight computes the weight of a sequence of elements of type unsigned char
-int weight(gf* r, int size) {
+int weight(unsigned char *r, int size) {
 	int i = 0, w = 0;
 	for (i = 0; i < size; i++) {
 		if (r[i] != 0)

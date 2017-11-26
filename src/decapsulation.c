@@ -20,7 +20,7 @@ decapsulation (unsigned char *ss, const unsigned char *ct,
   int i, test, decode_value;
   gf_init (6); //initialization of Log Antilog table
   const unsigned char *custom = (unsigned char*)"DAGs"; // customization = "DAGs";
-  gf *e, *mot, *c;
+  unsigned char *mot;
   unsigned char *m1, *rho1;
   unsigned char *r1, *d1, *rho2, *sigma, *e2, *hash_sigma, *e_prime;
   binmat_t H_alt;
@@ -35,57 +35,38 @@ decapsulation (unsigned char *ss, const unsigned char *ct,
    * part of the ciphertext ct = (c||d) with d is “ a plaintext confirmation”.
    * We obtain codeword mot = u1G and error e
    */
-  e = (gf*) calloc (code_length, sizeof(gf));
-  mot = (gf*) calloc (code_length, sizeof(gf));
-  c = (gf*) calloc (code_length, sizeof(gf));
+  e_prime = (unsigned char *)calloc(code_length, sizeof(unsigned char));
+  mot = (unsigned char *)malloc(code_length);
 
-  //Could be a memcpy
-  for (i = 0; i < code_length; i++){
-      c[i] = ct[i];
-  }
 
-  decode_value = decoding_H (H_alt, c, e, mot);
+  decode_value = decoding_H (H_alt, ct, e_prime, mot);
   mat_free(H_alt);
-  free(c);
 
   /*
    * Step_2 of the decapasulation :  Output ⊥ if decoding fails or wt(e) != n0_w
    */
 
-  if (decode_value == -1 || weight (e, code_length) != n0_w){
+  if (decode_value == -1 || weight (e_prime, code_length) != n0_w){
       return -1;
   }
 
-  e_prime = (unsigned char*) calloc (code_length, sizeof(unsigned char));
-
-  //casting
-  for (i = 0; i < code_length; i++){
-    e_prime[i] = (unsigned char) e[i];
-  }
-  free(e);
 
   /*
    * Step_3 of the decapasulation :  Recover u_prime = mot and parse it as (rho1||m1)
    */
-  m1 = (unsigned char*) calloc (k_prime, sizeof(unsigned char));
-  rho1 = (unsigned char*) calloc (k_sec, sizeof(unsigned char));
+  m1 = (unsigned char*)malloc(k_prime);
+  rho1 = (unsigned char*)malloc(k_sec);
 
   // Optimize modulo and removed copy to u1
-  for (i = 0; i < code_dimension; i++){
-      if (i < k_sec){
-      	rho1[i] = ((unsigned char)mot[i]) & gf_ord_sf;  //rho1 recovery
-      }
-      else{
-      	m1[i - k_sec] = ((unsigned char)mot[i]) & gf_ord_sf;     // m1 recovery
-      }
-  }
+  memcpy(rho1, mot, k_sec);
+  memcpy(m1, mot + k_sec, code_dimension - k_sec);
   free(mot);
+
   /*
    * Step_4 of the decapasulation :  Compute r1 = G(m1) and d1 = H(m1)
    */
-  r1 = (unsigned char*) calloc (code_dimension,
-  		sizeof(unsigned char));
-  d1 = (unsigned char*) calloc (k_prime, sizeof(unsigned char));
+  r1 = (unsigned char*)malloc(code_dimension);
+  d1 = (unsigned char*)malloc(k_prime);
 
   //Compute r1 = G(m1) where G is composed of sponge SHA-512 function and extend function.
   //m_extend is no longer required because we are using kangrooTwelve which handles sizing
@@ -115,18 +96,16 @@ decapsulation (unsigned char *ss, const unsigned char *ct,
   /*
    * Step_5 of the decapasulation: Parse r1 as (rho2||sigma1)
    */
-  rho2 = (unsigned char*) calloc (k_sec, sizeof(unsigned char));
-  sigma = (unsigned char*) calloc (code_dimension, sizeof(unsigned char));
+  rho2 = (unsigned char*)malloc(k_sec);
+  sigma = (unsigned char*)malloc(code_dimension);
 
   for (i = 0; i < code_dimension; i++){
       if (i < k_sec){
       	// Optimize modulo
-      	//rho2[i] = r1[i] % gf_card_sf;  //rho2 recovery
       	rho2[i] = r1[i] & gf_ord_sf;  //rho2 recovery
       }
       else{
       	// Optimize modulo
-      	//sigma[i - k_sec] = r1[i] % gf_card_sf; // sigma1 recovery
       	sigma[i - k_sec] = r1[i] & gf_ord_sf; // sigma1 recovery
       }
   }
@@ -142,7 +121,7 @@ decapsulation (unsigned char *ss, const unsigned char *ct,
    * Step_6 of the decapasulation: Generate error vector e2 of length n and
    * weight n0_w from sigma1
    */
-  hash_sigma = (unsigned char*) calloc (code_length,	sizeof(unsigned char));
+  hash_sigma = (unsigned char*)malloc(code_length);
 
   //Hashing sigma_extend by using sponge SHA-512 function.
   // hash_sigma1 = sponge (sigma_extend, code_length);
