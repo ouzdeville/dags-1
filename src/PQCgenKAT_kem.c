@@ -33,6 +33,7 @@ main ()
   char fn_req[32], fn_rsp[32];
   FILE *fp_req, *fp_rsp;
   unsigned char seed[48];
+  unsigned char random_values[48];
   unsigned char entropy_input[48];
   unsigned char ct[CRYPTO_CIPHERTEXTBYTES], ss[CRYPTO_BYTES], ss1[CRYPTO_BYTES];
   int count = 0;
@@ -59,15 +60,15 @@ main ()
 
   randombytes_init (entropy_input, NULL, 256);
   for (int i = 0; i < 100; i++)
-    {
-      fprintf (fp_req, "count = %d\n", i);
-      randombytes (seed, 48);
-      fprintBstr (fp_req, "seed = ", seed, 48);
-      fprintf (fp_req, "pk =\n");
-      fprintf (fp_req, "sk =\n");
-      fprintf (fp_req, "ct =\n");
-      fprintf (fp_req, "ss =\n\n");
-    }
+  {
+    fprintf(fp_req, "count = %d\n", i);
+    randombytes(random_values, 48);
+    fprintBstr(fp_req, "random_values = ", random_values, 48);
+    fprintf(fp_req, "pk =\n");
+    fprintf(fp_req, "sk =\n");
+    fprintf(fp_req, "ct =\n");
+    fprintf(fp_req, "ss =\n\n");
+  }
   fclose (fp_req);
 
   //Create the RESPONSE file based on what's in the REQUEST file

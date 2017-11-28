@@ -270,7 +270,7 @@ key_pair (unsigned char *pk, unsigned char *sk)
   gf_init (6);
   cauchy_support (v, u, w);
   free (w);
-  cfile_vec_F12 ("omega.txt", order, u);
+  //cfile_vec_F12 ("omega.txt", order, u); Write down omega, not nessary though 
   generate_random_vector (n0_val, z);
   H = mat_ini (pol_deg * (order), code_length);
   // construction matrix H
