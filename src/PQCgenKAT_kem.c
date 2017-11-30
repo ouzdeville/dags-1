@@ -57,10 +57,10 @@ int main()
   fread(&entropy_input, 1, byte_count, fp);
   fclose(fp);
 
-  /*//
-  for (int i = 0; i < 48; i++)
-    entropy_input[i] = i;
-    */ //
+  
+  
+  
+  
 
   randombytes_init(entropy_input, NULL, 256);
   for (int i = 0; i < 100; i++)
@@ -88,18 +88,18 @@ int main()
   {
     sk = malloc(CRYPTO_SECRETKEYBYTES);
     printf("Starting iteration: %d\n", counter);
-    if (counter == 22)
-    {
+    
+    
 
-      printf("22\n");
-    }
+    
+    
     fscanf(fp_req, "%d", &count);
-    /*if (FindMarker(fp_req, "count = "))
+    
 
-       else {
-       done = 1;
-       break;
-       }*/
+    
+    
+    
+    
 
     fprintf(fp_rsp, "count = %d\n", count);
 
@@ -112,12 +112,12 @@ int main()
     randombytes_init(seed, NULL, 256);
 
     // Generate the public/private keypair
-
-    uint64_t initial_key_pair = rdtsc();
-    ret_val = crypto_kem_keypair(pk, sk);
-    uint64_t final_key_pair = rdtsc();
-    uint64_t key_pair_count = final_key_pair - initial_key_pair;
-
+    do{
+      uint64_t initial_key_pair = rdtsc();
+      ret_val = crypto_kem_keypair(pk, sk);
+      uint64_t final_key_pair = rdtsc();
+      uint64_t key_pair_count = final_key_pair - initial_key_pair;
+    } while (ret_val == 0);
     printf("cycles keypair: %" PRId64 "\n", key_pair_count);
 
     if (ret_val != 0)

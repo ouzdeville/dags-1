@@ -19,6 +19,9 @@ sudo cp libkeccak.a /usr/local/lib/
 echo "DONE"
 ``` 
 
+Although we leave keccak in the build, but it might be obsolete someday so we recommend you do the instruction above to have newest Keccak library. 
+
+
 ### BUILD
 
 To build the binary, just run:

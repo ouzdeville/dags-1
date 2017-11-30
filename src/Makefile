@@ -8,7 +8,7 @@ INCS     =
 CXXINCS  = 
 BIN      = PQCgenKAT_kem
 LFLAGS=
-CFLAGS= -g -c -Wall -I. 
+CFLAGS= -c -Wall -I. 
 RM       = rm -f
 
 .PHONY: all all-before all-after clean clean-custom
@@ -32,7 +32,6 @@ util.o: util.c
 
 encapsulation.o: encapsulation.c
 	$(CC) -c encapsulation.c -o encapsulation.o $(CFLAGS)
-
 
 decapsulation.o: decapsulation.c
 	$(CC) -c decapsulation.c -o decapsulation.o $(CFLAGS)
