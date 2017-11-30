@@ -38,6 +38,7 @@ int main()
     int ret_val;
     int byte_count = 48;
     int counter = 0;
+    int i;
 
     // Create the REQUEST file
     sprintf(fn_req, "PQCkemKAT_%d.req", CRYPTO_SECRETKEYBYTES);
@@ -61,7 +62,7 @@ int main()
     fclose(fp_urandom);
 
     randombytes_init(entropy_input, NULL, 256);
-    for (int i = 0; i < 100; i++)
+    for ( i = 0; i < 100; i++)
     {
         fprintf(fp_req, "count = %d\n", i);
         randombytes(random_values, 48);
@@ -104,9 +105,9 @@ int main()
             uint64_t initial_key_pair = rdtsc();
             ret_val = crypto_kem_keypair(pk, sk);
             uint64_t final_key_pair = rdtsc();
+            uint64_t key_pair_count = final_key_pair - initial_key_pair;
         } while (ret_val == 0);
 
-        uint64_t key_pair_count = final_key_pair - initial_key_pair;
         printf("Key Generation cycles: %" PRId64 "\n", key_pair_count);
 
         if (ret_val != 0)
