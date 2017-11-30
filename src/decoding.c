@@ -63,8 +63,12 @@ binmat_t alternant_matrix(binmat_t H, gf *u)
 
     // Construction of the Second intermediate matrix
     // printf("\n   Construction of the Second intermediate matrix \n");
-
+    C = mat_ini(st, st);
     g = (poly_t *)malloc(st * sizeof(poly_t));
+    for (i = 0; i < st; i++)
+    {
+        g[i] = poly_alloc(st - 1);
+    }
 
     pol1 = poly_alloc(st - 1);
     pol2 = poly_alloc(1);
@@ -81,40 +85,42 @@ binmat_t alternant_matrix(binmat_t H, gf *u)
             temp = poly_mul(pol1, pol2);
             poly_free(pol1);
             pol1 = temp;
+            //g[i * t + k] = poly_quo(Srivastava, pol1);
+            poly_free(g[i * pol_deg + k]);
             g[i * pol_deg + k] = poly_quo(Srivastava, pol1);
             poly_calcule_deg(g[i * pol_deg + k]);
         }
-    }
-    poly_free(Srivastava);
-    C = mat_ini(st, st);
-    for (i = 0; i < st; i++)
-    {
-        for (j = 0; j < g[i]->deg + 1; j++)
-        {
-            C.coeff[i][j] = g[i]->coeff[j];
         }
-    }
-    poly_free(pol1);
-    poly_free(pol2);
-    for (i = 0; i < st; i++)
-    {
-        poly_free(g[i]);
-    }
-    free(g);
+        poly_free(Srivastava);
+        C = mat_ini(st, st);
+        for (i = 0; i < st; i++)
+        {
+            for (j = 0; j < g[i]->deg + 1; j++)
+            {
+                C.coeff[i][j] = g[i]->coeff[j];
+            }
+        }
+        poly_free(pol1);
+        poly_free(pol2);
+        for (i = 0; i < st; i++)
+        {
+            poly_free(g[i]);
+        }
+        free(g);
 
-    // Construction of the Third intermediate matrix
-    // printf("\n  Construction of the Third intermediate matrix \n");
-    B = mat_ini_Id(st);
-    inverse_matrice(C, B);
-    mat_free(C);
+        // Construction of the Third intermediate matrix
+        // printf("\n  Construction of the Third intermediate matrix \n");
+        B = mat_ini_Id(st);
+        inverse_matrice(C, B);
+        mat_free(C);
 
-    // And finally construction of the matrix of Srivastion
-    // printf("\n And finally construction of the matrix of Srivastion \n");
-    H_alt = produit_matrix(B, H_alter);
+        // And finally construction of the matrix of Srivastion
+        // printf("\n And finally construction of the matrix of Srivastion \n");
+        H_alt = produit_matrix(B, H_alter);
 
-    mat_free(H_alter);
-    mat_free(B);
-    return H_alt;
+        mat_free(H_alter);
+        mat_free(B);
+        return H_alt;
 }
 
 /*
