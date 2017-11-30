@@ -17,16 +17,16 @@ int decapsulation(unsigned char *ss, const unsigned char *ct,
 {
 
     int i, test, decode_value;
-    gf_init(6);                                            //initialization of Log Antilog table
+    gf_init(6);                                            // Initialize of Log Antilog table
     const unsigned char *custom = (unsigned char *)"DAGs"; // customization = "DAGs";
     unsigned char *mot;
     unsigned char *m1, *rho1;
     unsigned char *r1, *d1, *rho2, *sigma, *e2, *hash_sigma, *e_prime;
     binmat_t H_alt;
 
-    /*
-   * Read in the alternative matrix from the secret key
-   */
+   /*
+    * Read in the alternative matrix from the secret key
+    */
     H_alt = read_sk(sk);
 
     /*
@@ -66,17 +66,17 @@ int decapsulation(unsigned char *ss, const unsigned char *ct,
     r1 = (unsigned char *)malloc(code_dimension);
     d1 = (unsigned char *)malloc(k_prime);
 
-    //Compute r1 = G(m1) where G is composed of sponge SHA-512 function and extend function.
-    //m_extend is no longer required because we are using KangarooTwelve which handles sizing
-    //r1 = sponge (m_extend, code_dimension);
-    // Replace by KangarooTwelve
-    // r = sponge(m_extend, code_dimension);
+    // Compute r1 = G(m1) where G is composed of sponge SHA-512 function and extend function.
+    // m_extend is no longer required because we are using KangarooTwelve which handles sizing
+    
+
+
     // m: input type unsigned char len k_prime | r: output type unsigned char len code_dimesion
     test = KangarooTwelve(m1, k_prime, r1, code_dimension, custom, cus_len);
     assert(test == 0); // Catch Error
 
-    //Compute d1 = H(m1) where H is  sponge SHA-512 function
-    //d1 = sponge (m1, k_prime);
+    // Compute d1 = H(m1) where H is  sponge SHA-512 function
+    
     test = KangarooTwelve(m1, k_prime, d1, k_prime, custom, cus_len);
     assert(test == 0); // Catch Error
 
@@ -84,8 +84,8 @@ int decapsulation(unsigned char *ss, const unsigned char *ct,
     {
         d1[i] = d1[i] % gf_card_sf;
     }
-    //Return -1 if d distinct d1.
-    //d starts at ct+code_length.
+    // Return -1 if d distinct d1.
+    // d starts at ct+code_length.
     if (memcmp(ct + code_length, d1, k_prime) != 0)
     {
         return -1;
@@ -126,10 +126,9 @@ int decapsulation(unsigned char *ss, const unsigned char *ct,
    */
     hash_sigma = (unsigned char *)malloc(code_length);
 
-    //Hashing sigma_extend by using sponge SHA-512 function.
-    // hash_sigma1 = sponge (sigma_extend, code_length);
-    test = KangarooTwelve(sigma, k_prime, hash_sigma, code_length,
-                          custom, cus_len);
+    //Hashing sigma_extend by using KangarooTwelve function.
+
+    test = KangarooTwelve(sigma, k_prime, hash_sigma, code_length, custom, cus_len);
     assert(test == 0); // Catch Error
     free(sigma);
 
@@ -139,7 +138,7 @@ int decapsulation(unsigned char *ss, const unsigned char *ct,
     free(hash_sigma);
 
     /*
-   * Step_7 of the decapasulation: Return ⊥ if e_prime distinct e.
+   * Step_7 of the decapsulation: Return ⊥ if e_prime distinct e.
    */
     if (memcmp(e_prime, e2, code_length) != 0)
     {
@@ -150,7 +149,7 @@ int decapsulation(unsigned char *ss, const unsigned char *ct,
 
     /*
    * Step_7 of the decapsulation: If the previous condition is not satisfied,
-   * compute the shared secret ss by using sponge function and extend function
+   * compute the shared secret ss by using KangarooTwelve 
    */
     test = KangarooTwelve(m1, k_prime, ss, ss_lenght, custom, cus_len);
     assert(test == 0); // Catch Error

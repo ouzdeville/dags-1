@@ -7,7 +7,7 @@
 #define pol_deg 11 //block number 11
 #define code_length 1216
 #define code_dimension 512
-#define order  1<<5  // number of line of each block matrix
+#define order  (1<<5)  // number of line of each block matrix
 #define n0_val 38 // number of constant block
 #define k_prime 32
 #define k_sec 480
@@ -32,7 +32,7 @@
 #define pol_deg 8 //block number 11
 #define code_length 80
 #define code_dimension 48
-#define order  1<<1  // number of line of each block matrix
+#define order  (1<<1)  // number of line of each block matrix
 #define n0_val 40 // number of constant block
 */
 
