@@ -18,15 +18,16 @@ typedef struct matrix
 
 #define mat_coeff(A, i, j) ((coeffe[i][j]))
 
-binmat_t mat_ini(int rown, int coln);
-binmat_t mat_copy(binmat_t A);
+binmat_t matrix_init(int rown, int coln);
+binmat_t matrix_copy(binmat_t A);
 binmat_t mat_Into_base(binmat_t H);
-binmat_t mat_ini_Id(int rown);
-binmat_t Inversion_mat_pivot(binmat_t A);
-binmat_t transpose(binmat_t A);
-binmat_t produit_matrix(binmat_t A, binmat_t B);
-binmat_t produit_matrix_subfield(binmat_t A, binmat_t B);
-binmat_t permut_mat(int *P);
+binmat_t matrix_init_identity(int rown);
+binmat_t matrix_pivot_inversion(binmat_t A);
+binmat_t matrix_transpose(binmat_t A);
+binmat_t matrix_multiplication(binmat_t A, binmat_t B);
+binmat_t matrix_multiplicaion_subfield(binmat_t A, binmat_t B);
+binmat_t matrix_permutation(int *P);
+int matrix_inverse(binmat_t A, binmat_t S);
 
 
 int *test_mat(binmat_t A);
@@ -40,7 +41,7 @@ void mat_rowxor_with_another(binmat_t A, int i, gf *Line);
 void G_mat(binmat_t G, binmat_t H_syst);
 void aff_mat(binmat_t mat);
 void affiche_vecteur(gf *P, int taille);
-void Permut_vecteur(int *P, gf *v, int taille);
+void vector_permutation(int *P, gf *v, int taille);
 void secret_matrix(binmat_t H, gf *u, gf *v, gf *z);
 void quasi_dyadic_bloc_mat(int s, binmat_t M, gf *sig, int ind_col, int ind_rown);
 
@@ -48,18 +49,18 @@ void quasi_dyadic_bloc_mat(int s, binmat_t M, gf *sig, int ind_col, int ind_rown
 
 int syst(binmat_t H);
 int syst_mat(binmat_t H);
-int inverse_matrice(binmat_t A, binmat_t S);
+
 
 //int syst(binmat_t H, binmat_t P);
 
 
-gf *produit_matrix_vector_subfield(binmat_t A, gf *v);
-gf *produit_vector_matrix_subfield(gf *v, binmat_t A);
-gf *produit_matrix_vector(binmat_t A, gf *v);
-gf *produit_vector_matrix(gf *v, binmat_t A);
-gf *produit_vector_matrix_Sf(gf *v, binmat_t A);
-gf *produit_matrix_vector(binmat_t A, gf *v);
-gf Eltseq(gf a, int k);
+gf *mult_matrix_vector_subfield(binmat_t A, gf *v);
+gf *mult_vector_matrix_subfield(gf *v, binmat_t A);
+gf *mult_matrix_vector(binmat_t A, gf *v);
+gf *mult_vector_matrix(gf *v, binmat_t A);
+gf *mult_vector_matrix_Sf(gf *v, binmat_t A);
+gf *mult_matrix_vector(binmat_t A, gf *v);
+gf eltseq(gf a, int k);
 
 
 

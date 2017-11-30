@@ -257,7 +257,7 @@ int key_pair(unsigned char *pk, unsigned char *sk)
     free(w);
     //cfile_vec_F12 ("omega.txt", order, u); //Write down omega, not nessary though
     generate_random_vector(n0_val, z);
-    H = mat_ini(pol_deg * (order), code_length);
+    H = matrix_init(pol_deg * (order), code_length);
     // construction matrix H
     secret_matrix(H, u, v, z);
     free(v);

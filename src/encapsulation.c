@@ -102,12 +102,12 @@ int encapsulation(const unsigned char *pk, unsigned char *ct, unsigned char *ss)
     /*
      * Step_5: Recovery of G and Compute c = uG + e
      */
-    binmat_t G = mat_ini(code_dimension, code_length);
+    binmat_t G = matrix_init(code_dimension, code_length);
 
     //set_Public_matrix(pk, code_dimension, code_length-code_dimension, G);
     recup_pk(pk, G);
 
-    c = produit_vector_matrix_Sf(u, G);
+    c = mult_vector_matrix_Sf(u, G);
     mat_free(G);
     free(u);
 

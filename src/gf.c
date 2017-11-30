@@ -222,8 +222,3 @@ int gf_init(int extdeg)
     return 1;
 }
 
-// This 1 byte random should be replace and use PRNG instead
-gf_t gf_rand(int (*u8rnd)())
-{
-    return (u8rnd() ^ (u8rnd() << 8)) & gf_ord_sf;
-}

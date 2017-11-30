@@ -4,7 +4,7 @@
 /*
  ~~~~~~~~Matrix Operations ~~~~~~~~~~~~~~~~ */
 
-binmat_t produit_matrix(binmat_t A, binmat_t B)
+binmat_t matrix_multiplication(binmat_t A, binmat_t B)
 {
     binmat_t res;
     if (A.coln != B.rown)
@@ -17,7 +17,7 @@ binmat_t produit_matrix(binmat_t A, binmat_t B)
         int i, j, k;
 
         gf a;
-        res = mat_ini(A.rown, B.coln);
+        res = matrix_init(A.rown, B.coln);
         for (i = 0; i < A.rown; i++)
         {
             for (j = 0; j < B.coln; j++)
@@ -34,11 +34,11 @@ binmat_t produit_matrix(binmat_t A, binmat_t B)
     }
 }
 
-binmat_t transpose(binmat_t A)
+binmat_t matrix_transpose(binmat_t A)
 {
     int i, j;
     binmat_t Res;
-    Res = mat_ini(A.coln, A.rown);
+    Res = matrix_init(A.coln, A.rown);
     for (i = 0; i < A.rown; i++)
     {
         for (j = 0; j < A.coln; j++)
@@ -49,7 +49,7 @@ binmat_t transpose(binmat_t A)
     return Res;
 }
 
-binmat_t produit_matrix_subfield(binmat_t A, binmat_t B)
+binmat_t matrix_multiplicaion_subfield(binmat_t A, binmat_t B)
 {
     binmat_t Res;
     if (A.coln != B.rown)
@@ -62,7 +62,7 @@ binmat_t produit_matrix_subfield(binmat_t A, binmat_t B)
     {
         int i, j, k;
         gf a;
-        Res = mat_ini(A.rown, B.coln);
+        Res = matrix_init(A.rown, B.coln);
         for (i = 0; i < A.rown; i++)
         {
             for (j = 0; j < B.coln; j++)
@@ -79,11 +79,11 @@ binmat_t produit_matrix_subfield(binmat_t A, binmat_t B)
     }
 }
 
-binmat_t permut_mat(int *P)
+binmat_t matrix_permutation(int *P)
 {
     binmat_t M;
     int i;
-    M = mat_ini(code_length, code_length);
+    M = matrix_init(code_length, code_length);
     for (i = 0; i < code_length; i++)
     {
         M.coeff[P[i]][i] = 1;
@@ -91,7 +91,7 @@ binmat_t permut_mat(int *P)
     return M;
 }
 
-binmat_t mat_ini(int rown, int coln)
+binmat_t matrix_init(int rown, int coln)
 {
     unsigned int i;
     binmat_t A;
@@ -107,7 +107,7 @@ binmat_t mat_ini(int rown, int coln)
     return A;
 }
 
-binmat_t mat_ini_Id(int rown)
+binmat_t matrix_init_identity(int rown)
 {
     unsigned int i;
     binmat_t A;
@@ -147,11 +147,11 @@ void aff_mat(binmat_t mat)
     printf("\n");
 }
 
-binmat_t mat_copy(binmat_t A)
+binmat_t matrix_copy(binmat_t A)
 {
     binmat_t X;
     int i, j;
-    X = mat_ini(A.rown, A.coln);
+    X = matrix_init(A.rown, A.coln);
     for (i = 0; i < A.rown; i++)
     {
         for (j = 0; j < A.coln; j++)
@@ -255,28 +255,26 @@ gf *mat_line_mult_with_return(binmat_t A, gf a, int i)
     return Line;
 }
 
-gf Eltseq(gf a, int k)
+gf eltseq(gf a, int k)
 {
     gf x[m_val];
-    x[0] = a >> 6;
-    x[1] = a & (63);
+    x[0] = a >> gf_extd_sf;
+    x[1] = a & (u_val-1);
     return x[k];
 }
-//If known that m_val is not going to change as a parameter
-//unroll the for loops and remove the call to Eltseq
 binmat_t mat_Into_base(binmat_t H)
 {
     int k, i, j;
     int r = order * pol_deg;
 
-    binmat_t HH = mat_ini(m_val * r, code_length);
+    binmat_t HH = matrix_init(m_val * r, code_length);
     for (k = 0; k < m_val; k++)
     {
         for (i = 0; i < r; i++)
         {
             for (j = 0; j < code_length; j++)
             {
-                HH.coeff[k * r + i][j] = Eltseq(H.coeff[i][j], k);
+                HH.coeff[k * r + i][j] = eltseq(H.coeff[i][j], k);
             }
         }
     }
@@ -490,7 +488,7 @@ void G_mat(binmat_t G, binmat_t H_syst)
 {
     int i, j;
     binmat_t H;
-    H = mat_copy(H_syst);
+    H = matrix_copy(H_syst);
     for (i = 0; i < code_length - code_dimension; i++)
     {
         for (j = 0; j < code_dimension; j++)
@@ -511,7 +509,7 @@ void affiche_vecteur(gf *v, int taille)
     printf("\n");
 }
 
-gf *produit_matrix_vector_subfield(binmat_t A, gf *v)
+gf *mult_matrix_vector_subfield(binmat_t A, gf *v)
 {
     int i, k;
     gf *Res = (gf *)calloc(A.rown, sizeof(gf));
@@ -525,7 +523,7 @@ gf *produit_matrix_vector_subfield(binmat_t A, gf *v)
     return Res;
 }
 
-gf *produit_vector_matrix_subfield(gf *v, binmat_t A)
+gf *mult_vector_matrix_subfield(gf *v, binmat_t A)
 {
     int i, k;
     gf *Res = (gf *)calloc(A.coln, sizeof(gf));
@@ -539,7 +537,7 @@ gf *produit_vector_matrix_subfield(gf *v, binmat_t A)
     return Res;
 }
 
-gf *produit_vector_matrix(gf *v, binmat_t A)
+gf *mult_vector_matrix(gf *v, binmat_t A)
 {
     int i, k;
     gf *Res = (gf *)calloc(A.coln, sizeof(gf));
@@ -553,7 +551,7 @@ gf *produit_vector_matrix(gf *v, binmat_t A)
     return Res;
 }
 
-gf *produit_vector_matrix_Sf(gf *v, binmat_t A)
+gf *mult_vector_matrix_Sf(gf *v, binmat_t A)
 {
     int i, k;
     gf *Res = (gf *)calloc(A.coln, sizeof(gf));
@@ -567,7 +565,7 @@ gf *produit_vector_matrix_Sf(gf *v, binmat_t A)
     return Res;
 }
 
-gf *produit_matrix_vector(binmat_t A, gf *v)
+gf *mult_matrix_vector(binmat_t A, gf *v)
 {
     int i, k;
     gf *Res = (gf *)calloc(A.rown, sizeof(gf));
@@ -581,7 +579,7 @@ gf *produit_matrix_vector(binmat_t A, gf *v)
     }
     return Res;
 }
-void Permut_vecteur(int *P, gf *c, int taille)
+void vector_permutation(int *P, gf *c, int taille)
 {
     int i = 0;
     gf *v = (gf *)calloc(code_length, sizeof(gf));
@@ -595,12 +593,12 @@ void Permut_vecteur(int *P, gf *c, int taille)
     }
 }
 
-int inverse_matrice(binmat_t A, binmat_t S)
+int matrix_inverse(binmat_t A, binmat_t S)
 {
 
     int i, j, l, test = 0;
     gf temp, temp1;
-    binmat_t H = mat_copy(A);
+    binmat_t H = matrix_copy(A);
     int n = H.coln;
     int k = H.rown;
     for (i = 0; i < k; i++)
@@ -686,9 +684,9 @@ void secret_matrix(binmat_t H, gf *u, gf *v, gf *z)
     int i, j, k, l = 0;
     for (i = 0; i < pol_deg; i++)
     {
-        T[i] = mat_ini(order, code_length);
+        T[i] = matrix_init(order, code_length);
     }
-    H_fin = mat_ini(pol_deg * (order), code_length);
+    H_fin = matrix_init(pol_deg * (order), code_length);
 
     for (i = 0; i < order; i++)
     {

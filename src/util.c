@@ -120,7 +120,7 @@ void recup_pk(const unsigned char *pk, binmat_t G)
 	int a = 0;
 	int i, j, k, p, l, m, q;
 	binmat_t M;
-	M = mat_ini(code_dimension, code_length - code_dimension);
+	M = matrix_init(code_dimension, code_length - code_dimension);
 	k = code_dimension / (order);
 	p = (code_length - code_dimension) / 4;
 	gf c1 = 0, c2 = 0, c3 = 0, c4 = 0, tmp1 = 0, tmp2 = 0;
@@ -199,7 +199,7 @@ binmat_t read_sk(const unsigned char *sk)
 	unsigned int coln = ((unsigned int *)sk)[1];
 	unsigned int sk_loc = 2 * sizeof(unsigned int);
 	unsigned int i;
-	binmat_t H_alt = mat_ini(rown, coln);
+	binmat_t H_alt = matrix_init(rown, coln);
 	for (i = 0; i < H_alt.rown; i++)
 	{
 		memcpy(H_alt.coeff[i], sk + sk_loc, H_alt.coln * sizeof(gf));

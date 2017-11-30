@@ -116,6 +116,4 @@ gf gf_pow(gf f, int n);
 // Un-nessary use antilog and log table
 int gf_init(int extdeg);
 
-// Unused gf_rand
-gf_t gf_rand(int (*u8rnd)());
 #endif

@@ -1,7 +1,6 @@
 #ifndef GF_H
 #define GF_H
 #endif
-#include "gf.h"
 
 
 /*

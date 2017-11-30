@@ -45,7 +45,7 @@ binmat_t alternant_matrix(binmat_t H, gf *u)
 
     //Construction of the First intermediate matrix
     //printf("\n   Construction of the First intermediate matrix \n");
-    H_alter = mat_ini(st, code_length);
+    H_alter = matrix_init(st, code_length);
     for (i = 0; i < order; i++)
     {
         for (k = 0; k < pol_deg; k++)
@@ -64,7 +64,7 @@ binmat_t alternant_matrix(binmat_t H, gf *u)
     //Construction of the Second intermediate matrix
     //printf("\n   Construction of the Second intermediate matrix \n");
 
-    C = mat_ini(st, st);
+    C = matrix_init(st, st);
 
     g = (poly_t *)malloc(st * sizeof(poly_t));
     for (i = 0; i < st; i++)
@@ -112,13 +112,13 @@ binmat_t alternant_matrix(binmat_t H, gf *u)
 
     //Construction of the Third intermediate matrix
     //printf("\n  Construction of the Third intermediate matrix \n");
-    B = mat_ini_Id(st);
-    inverse_matrice(C, B);
+    B = matrix_init_identity(st);
+    matrix_inverse(C, B);
     mat_free(C);
 
     //And finally construction of the matrix of Srivastion
     //printf("\n And finally construction of the matrix of Srivastion \n");
-    H_alt = produit_matrix(B, H_alter);
+    H_alt = matrix_multiplication(B, H_alter);
     //aff_mat(H_alt);
     mat_free(H_alter);
     mat_free(B);
