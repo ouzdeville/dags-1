@@ -5,17 +5,15 @@
  **********************************************************************************************
  */
 
-#include<stdlib.h>
-#include<stdio.h>
-#include<sys/types.h>
-#include<stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <stdint.h>
 #include <assert.h>
 #include <keccak/KangarooTwelve.h>
 
-
-
 #include "round.h"
-//#include "sponge.h"
+
 #include "fichier.h"
 #include "util.h"
 
@@ -27,6 +25,4 @@
  * @param ct
  * @param ss secret shared
  */
-int
-encapsulation (const unsigned char *pk, unsigned char *ct, unsigned char *ss);
-
+int encapsulation(const unsigned char *pk, unsigned char *ct, unsigned char *ss);

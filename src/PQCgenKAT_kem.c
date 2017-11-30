@@ -147,7 +147,7 @@ int main()
         printf("Decapsulation cycles: %" PRId64 "\n", dec_count);
 
         uint64_t total_cycles = dec_count + key_pair_count + enc_count;
-        printf("Total cycles: %" PRId64 "\n", total_cycles);
+        printf("Total cycles: %" PRId64 "\n\n", total_cycles);
 
         if ((ret_val) != 0)
         {

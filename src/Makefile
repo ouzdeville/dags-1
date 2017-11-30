@@ -19,7 +19,7 @@ clean: clean-custom
 	${RM} $(OBJ) $(BIN)
 
 $(BIN): $(OBJ)
-	$(CC) -O3 $(LINKOBJ) -o $(BIN) $(LIBS) -g
+	$(CC) -O3 $(LINKOBJ) -o $(BIN) $(LIBS)
 
 gf.o: gf.c
 	$(CC) -c gf.c -o gf.o $(CFLAGS)
