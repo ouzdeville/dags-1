@@ -130,6 +130,7 @@ int main()
 
         if (ret_val != 0)
         {
+            printf("Encap got wrong");
             return KAT_CRYPTO_FAILURE;
         }
 
@@ -156,11 +157,12 @@ int main()
 
         if (memcmp(ss, ss1, CRYPTO_BYTES))
         {
+            printf("memcpy got wrong");
             return KAT_CRYPTO_FAILURE;
         }
         counter++;
         free(sk);
-        printf("%d\n", counter);
+    
     } while (counter < 100);
 
     fclose(fp_req);
