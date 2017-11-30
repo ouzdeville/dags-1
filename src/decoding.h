@@ -15,7 +15,7 @@
  * @param mot - short IV
  * @param S the polynomial syndrome.
  */
-void polynome_syndrome_1(  binmat_t H, const unsigned char *mot, poly_t S);
+void polynome_syndrome_1(binmat_t H, const unsigned char *mot, poly_t S);
 /**
  * @brief function transform a Generalized Srivastava matrix in  alternant form
  * @param H generalized Srivastava matrix
@@ -23,7 +23,7 @@ void polynome_syndrome_1(  binmat_t H, const unsigned char *mot, poly_t S);
  *
  * @return the alternant matrix if it is possible to compute
  */
-binmat_t alternant_matrix(binmat_t H, gf * u);
+binmat_t alternant_matrix(binmat_t H, gf *u);
 
 /**
  * @brief function to decode H in the alternant form
@@ -34,5 +34,4 @@ binmat_t alternant_matrix(binmat_t H, gf * u);
  *
  * @return -1 if it is not possible to compute and 1 if it is possible to compute
  */
-int decoding_H(binmat_t H_alt, const unsigned char *c, unsigned char *e,
-		unsigned char *mot );
+int decoding_H(binmat_t H_alt, const unsigned char *c, unsigned char *e, unsigned char *mot);
