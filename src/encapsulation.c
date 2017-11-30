@@ -39,7 +39,7 @@ int encapsulation(const unsigned char *pk, unsigned char *ct, unsigned char *ss)
      * H(x) = sponge(x,k_prime)
      */
 
-    // Replace by KangarooTwelve
+    
 
     // m: input type unsigned char len k_prime | r: output type unsigned char len code_dimesion
     test = KangarooTwelve(m, k_prime, r, code_dimension, custom, cus_len);
@@ -50,8 +50,8 @@ int encapsulation(const unsigned char *pk, unsigned char *ct, unsigned char *ss)
 
 
 
-    // Replace by KangarooTwelve
-    // d = sponge(m, k_prime);
+    
+ 
     // m: input type unsigned char len k_prime | d: output type unsigned char len k_prime
     test = KangarooTwelve(m, k_prime, d, k_prime, custom, cus_len);
     assert(test == 0); // Catch Error
@@ -138,14 +138,14 @@ int encapsulation(const unsigned char *pk, unsigned char *ct, unsigned char *ss)
     /*
      * Step_6: Compute K = K(m)
      */
-    unsigned char* K = (unsigned char*) calloc(ss_lenght, sizeof(unsigned char));
+    unsigned char* K = (unsigned char*) calloc(ss_length, sizeof(unsigned char));
     // Replace by KangarooTwelve
   
     // m: input type unsigned char len k_prime | K: output type unsigned char len ss_length
-    test = KangarooTwelve(m, k_prime, K, ss_lenght, custom, cus_len);
+    test = KangarooTwelve(m, k_prime, K, ss_length, custom, cus_len);
     assert(test == 0); // Catch Error
 
-    for (i = 0; i < ss_lenght; i++){
+    for (i = 0; i < ss_length; i++){
         ss[i] = K[i];
     }
     free(K);

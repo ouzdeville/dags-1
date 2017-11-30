@@ -149,7 +149,7 @@ int decapsulation(unsigned char *ss, const unsigned char *ct,
    * Step_7 of the decapsulation: If the previous condition is not satisfied,
    * compute the shared secret ss by using KangarooTwelve 
    */
-    test = KangarooTwelve(m1, k_prime, ss, ss_lenght, custom, cus_len);
+    test = KangarooTwelve(m1, k_prime, ss, ss_length, custom, cus_len);
     assert(test == 0); // Catch Error
     free(m1);
 

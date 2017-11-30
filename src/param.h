@@ -12,7 +12,7 @@
 #define k_prime 32
 #define k_sec 480
 #define n0_w 176
-#define ss_lenght 64*/
+#define ss_length 64*/
 
 
 
@@ -25,7 +25,7 @@
 #define k_prime 32
 #define k_sec 672
 #define n0_w 352
-#define ss_lenght 64
+#define ss_length 64
 
 
 /*
