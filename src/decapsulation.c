@@ -24,7 +24,7 @@ int decapsulation(unsigned char *ss, const unsigned char *ct,
     unsigned char *r1, *d1, *rho2, *sigma, *e2, *hash_sigma, *e_prime;
     binmat_t H_alt;
 
-   /*
+    /*
     * Read in the alternative matrix from the secret key
     */
     H_alt = read_sk(sk);
@@ -68,15 +68,13 @@ int decapsulation(unsigned char *ss, const unsigned char *ct,
 
     // Compute r1 = G(m1) where G is composed of sponge SHA-512 function and extend function.
     // m_extend is no longer required because we are using KangarooTwelve which handles sizing
-    
-
 
     // m: input type unsigned char len k_prime | r: output type unsigned char len code_dimesion
     test = KangarooTwelve(m1, k_prime, r1, code_dimension, custom, cus_len);
     assert(test == 0); // Catch Error
 
     // Compute d1 = H(m1) where H is  sponge SHA-512 function
-    
+
     test = KangarooTwelve(m1, k_prime, d1, k_prime, custom, cus_len);
     assert(test == 0); // Catch Error
 
