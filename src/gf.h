@@ -30,8 +30,7 @@ typedef uint16_t gf_t;
 #define poly_primitive_subfield 67
 
 //int gf_extension_degree, gf_cardinality, gf_multiplicative_order;
-gf_t *gf_log_sf;
-gf_t *gf_antilog_sf;
+
 
 gf *gf_log;
 gf *gf_antilog;
@@ -48,48 +47,14 @@ gf *gf_antilog;
 
 #define gf_modq_1_sf(d) ((d) % 63)
 
-// Check y is zero, if zero, return 0, else calculate
-#define gf_mul_fast_subfield(x, y) ((y) ? gf_antilog_sf[gf_modq_1_sf(gf_log_sf[x] + gf_log_sf[y])] : 0)
-
-// Multiplication in the field : apha^i*alpha^j=alpha^(i+j)
-// Check x is zero, if zero, return 0, else calculate
-#define gf_Mult_subfield(x, y) ((x) ? gf_mul_fast_subfield(x, y) : 0)
-
-// In direct way to calculate power in range 2^6.
-// Only use in line
-// 404:decoding.c: 				valeur_erreurs->coeff[i] = gf_Pow_subfield(2, k);
-// gf_Pow_subfield is always calculate 2^k
-#define gf_Pow_subfield(x, i) (gf_antilog_sf[(gf_modq_1_sf(gf_log_sf[x] * i))])
-
-// Inverse in the subfield
-#define gf_Inv_subfield(x) gf_antilog_sf[gf_ord_sf - gf_log_sf[x]]
-
-////////////////////////////////////////////////////////////////////
-///////////////////////// MAIN FIELD OPERATION /////////////////////
-
 #define _gf_modq_1(d) ((d) % 4095)
 
-// Check y is zero, if zero, return 0, else calculate
-#define gf_mul_fast(x, y) ((y) ? gf_antilog[_gf_modq_1(gf_log[x] + gf_log[y])] : 0)
+gf_t gf_mul_fast_subfield(gf_t x, gf_t y);
+gf_t gf_Mult_subfield(gf_t x, gf_t y);
+gf_t gf_Pow_subfield(gf_t x, int i);
+gf_t gf_Inv_subfield(gf_t x);
+gf gf_mul_fast(gf x, gf y);
 
-// Check x is zero, if zero, return 0, else calculate
-// Multiplication in the field : apha^i*alpha^j=alpha^(i+j)
-//#define gf_Mult(x, y) ((x) ? gf_mul_fast(x, y) : 0)
-
-////////////////////////////////////////////////////////////////////
-///////////////////////// INCORRECT FUNCTION ///////////////////////
-// Should be REMOVED
-
-// Incorrect gf_Pow due to incorrect antilog table
-//#define gf_Pow(x, i) (gf_antilog[(_gf_modq_1(gf_log[x] * i))])
-
-// Incorrect gf_DIV due to incorrect antilog table
-//#define gf_Div(x, y) ((x) ? gf_antilog[_gf_modq_1(gf_log[x] - gf_log[y])] : 0) // Division in the field : apha^i/alpha^j=alpha^(i-j)
-
-// Incorrect gf_Inv due to incorrect antilog table
-//#define gf_Inv(x) gf_antilog[gf_ord - gf_log[x]]                               // Inverse in the field
-
-////////////////////////////////////////////////////////////////////
 
 // Correct gf_Mult1 =>> will rename to gf_Mult
 gf gf_mult(gf in0, gf in1);
