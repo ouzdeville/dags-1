@@ -42,6 +42,7 @@ int indice_in_vec(unsigned int *v, int j, int size)
 unsigned char *random_e(int size, int q, int w, unsigned char *sigma)
 {
 	unsigned char *e = (unsigned char *)calloc(size, sizeof(unsigned char));
+	unsigned int *v = (unsigned int *)calloc(size, sizeof(unsigned int));
 	int i, j = 0, k = 0, jeton = 0;
 
 	for (i = 0; i < size; i++)
@@ -58,11 +59,13 @@ unsigned char *random_e(int size, int q, int w, unsigned char *sigma)
 		{
 			jeton = (sigma[k + 1] ^ (sigma[k] << 4)) % size;
 			k++;
-		} while (e[jeton] != 0); // Can only change if error location is zero
+		} while (indice_in_vec(v, jeton, j + 1) == 1); //Only check j elements
+		v[j] = jeton;
 		e[jeton] = sigma[i] % q;
 		jeton = 0;
 		j++;
 	}
+	free(v);
 	return e;
 }
 

@@ -43,8 +43,8 @@ binmat_t alternant_matrix(binmat_t H, gf *u)
     binmat_t H_alter, H_alt, B, C;
     ;
 
-    // Construction of the First intermediate matrix
-    // printf("\n   Construction of the First intermediate matrix \n");
+    //Construction of the First intermediate matrix
+    //printf("\n   Construction of the First intermediate matrix \n");
     H_alter = mat_ini(st, code_length);
     for (i = 0; i < order; i++)
     {
@@ -57,13 +57,15 @@ binmat_t alternant_matrix(binmat_t H, gf *u)
         }
     }
 
-    // Construction of Srivastava's Polynome
-    // printf("\n  Construction of Srivastava's Polynome  \n");
+    //Construction of Srivastava's Polynome
+    //printf("\n  Construction of Srivastava's Polynome  \n");
     Srivastava = poly_srivastava(u, order, pol_deg);
 
-    // Construction of the Second intermediate matrix
-    // printf("\n   Construction of the Second intermediate matrix \n");
+    //Construction of the Second intermediate matrix
+    //printf("\n   Construction of the Second intermediate matrix \n");
+
     C = mat_ini(st, st);
+
     g = (poly_t *)malloc(st * sizeof(poly_t));
     for (i = 0; i < st; i++)
     {
@@ -80,47 +82,47 @@ binmat_t alternant_matrix(binmat_t H, gf *u)
         pol2->coeff[1] = 1;
         for (k = 0; k < pol_deg; k++)
         {
-            // Store in temp and free to prevent memory leaks
-
+            //Store in temp and free to prevent memory leaks
+            //			pol1 = poly_mul(pol1, pol2);
             temp = poly_mul(pol1, pol2);
             poly_free(pol1);
             pol1 = temp;
             //g[i * t + k] = poly_quo(Srivastava, pol1);
+            temp = poly_quo(Srivastava, pol1);
             poly_free(g[i * pol_deg + k]);
-            g[i * pol_deg + k] = poly_quo(Srivastava, pol1);
+            g[i * pol_deg + k] = temp;
             poly_calcule_deg(g[i * pol_deg + k]);
         }
-        }
-        poly_free(Srivastava);
-        C = mat_ini(st, st);
-        for (i = 0; i < st; i++)
+    }
+    poly_free(Srivastava);
+    for (i = 0; i < st; i++)
+    {
+        for (j = 0; j < g[i]->deg + 1; j++)
         {
-            for (j = 0; j < g[i]->deg + 1; j++)
-            {
-                C.coeff[i][j] = g[i]->coeff[j];
-            }
+            C.coeff[i][j] = g[i]->coeff[j];
         }
-        poly_free(pol1);
-        poly_free(pol2);
-        for (i = 0; i < st; i++)
-        {
-            poly_free(g[i]);
-        }
-        free(g);
+    }
+    poly_free(pol1);
+    poly_free(pol2);
+    for (i = 0; i < st; i++)
+    {
+        poly_free(g[i]);
+    }
+    free(g);
 
-        // Construction of the Third intermediate matrix
-        // printf("\n  Construction of the Third intermediate matrix \n");
-        B = mat_ini_Id(st);
-        inverse_matrice(C, B);
-        mat_free(C);
+    //Construction of the Third intermediate matrix
+    //printf("\n  Construction of the Third intermediate matrix \n");
+    B = mat_ini_Id(st);
+    inverse_matrice(C, B);
+    mat_free(C);
 
-        // And finally construction of the matrix of Srivastion
-        // printf("\n And finally construction of the matrix of Srivastion \n");
-        H_alt = produit_matrix(B, H_alter);
-
-        mat_free(H_alter);
-        mat_free(B);
-        return H_alt;
+    //And finally construction of the matrix of Srivastion
+    //printf("\n And finally construction of the matrix of Srivastion \n");
+    H_alt = produit_matrix(B, H_alter);
+    //aff_mat(H_alt);
+    mat_free(H_alter);
+    mat_free(B);
+    return H_alt;
 }
 
 /*
@@ -140,9 +142,10 @@ int decoding_H(binmat_t H_alt, const unsigned char *c, unsigned char *error,
     gf *ver, pol_gf, tmp, tmp1, o;
     gf alpha;
 
-    // Compute Syndrome normally
+    //Compute Syndrome normally
     Syndrome = poly_alloc(st - 1);
     polynome_syndrome_1(H_alt, c, Syndrome);
+    //aff_poly(Syndrome);
 
     if (Syndrome->deg == -1)
     {
@@ -160,8 +163,8 @@ int decoding_H(binmat_t H_alt, const unsigned char *c, unsigned char *error,
     app = poly_alloc(st);
     uu = poly_alloc(st);
     u = poly_alloc(st);
-
-    // Set to unit
+    //	poly_set_to_unit(u);
+    //Set to unit
     u->coeff[0] = 1;
     u->deg = 0;
 
@@ -192,7 +195,7 @@ int decoding_H(binmat_t H_alt, const unsigned char *c, unsigned char *error,
     poly_free(app);
     poly_free(resto);
 
-    // Then we find error locator poly (sigma) and error evaluator poly (omega)
+    //Then we find error locator poly (sigma) and error evaluator poly (omega)
     pol = poly_alloc(0);
     pol->coeff[0] = gf_inv(poly_eval(u, 0));
     omega = poly_mul(Syndrome, pol);
@@ -201,14 +204,14 @@ int decoding_H(binmat_t H_alt, const unsigned char *c, unsigned char *error,
     poly_free(pol);
     poly_free(u);
 
-    // Support
+    //Support
     ver = (gf *)malloc(code_length * sizeof(gf));
     for (i = 0; i < code_length; i++)
     {
         ver[i] = gf_mult(H_alt.coeff[1][i], gf_inv(H_alt.coeff[0][i]));
     }
 
-    // Polynome POS gives the position of the errors
+    //Polynome POS gives the position of the errors
     pos = poly_alloc(st / 2);
     j = 0;
     for (i = 0; i < code_length; i++)
@@ -222,12 +225,13 @@ int decoding_H(binmat_t H_alt, const unsigned char *c, unsigned char *error,
     poly_calcule_deg(pos);
     poly_free(sigma);
 
-    // Element for determining the value of errors
+    //Element for determining the value of errors
     if (pos->deg == -1)
     {
         return -1;
     }
 
+    // H_alt = produit_matrix(H_alt,PP);
     app = poly_alloc(pos->deg);
     for (j = 0; j <= pos->deg; j++)
     {
@@ -270,16 +274,17 @@ int decoding_H(binmat_t H_alt, const unsigned char *c, unsigned char *error,
         j = LOG_12[app->coeff[i]];
         k = j / LOG_12[alpha];
         error[pos->coeff[i]] = (unsigned char)(gf_Pow_subfield(2, k));
+        //printf(" %d " ,valeur_erreurs->coeff[i]);
     }
     poly_free(app);
     free(LOG_12);
     poly_free(pos);
 
-    // Reconstruction of code_word
+    //Reconstruction of code_word
     for (i = 0; i < code_length; i++)
     {
         code_word[i] = (c[i] ^ error[i]) & gf_ord_sf;
-        // printf(" %d ",code_word[i]);
+        //printf(" %d ",code_word[i]);
     }
 
     return 1;
