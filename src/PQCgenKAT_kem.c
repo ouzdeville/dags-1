@@ -83,6 +83,7 @@ int main()
     }
 
     fprintf(fp_rsp, "# %s\n\n", CRYPTO_ALGNAME);
+
     do
     {
         sk = malloc(CRYPTO_SECRETKEYBYTES);
@@ -152,6 +153,7 @@ int main()
 
         if ((ret_val) != 0)
         {
+            printf("Decap got wrong");
             return KAT_CRYPTO_FAILURE;
         }
 
