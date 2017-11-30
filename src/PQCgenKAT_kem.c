@@ -107,7 +107,7 @@ int main()
             ret_val = crypto_kem_keypair(pk, sk);
             final_key_pair = rdtsc();
             key_pair_count = final_key_pair - initial_key_pair;
-        } while (ret_val == 0);
+        } while (ret_val != 0);
 
         printf("Key Generation cycles: %" PRId64 "\n", key_pair_count);
 
