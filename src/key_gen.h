@@ -29,7 +29,7 @@
  *
  * @return @result if it is disjoint it will be 0 if not wil return -1.
  */
-int disjoint_test(gf * u, gf * v );
+int disjoint_test(gf *u, gf *v);
 
 /**
  * @brief Method to generate a random vector.
@@ -55,7 +55,7 @@ void init_random_element(gf *U);
  * @param w element to be signed.
  *
  */
-void binary_quasi_dyadic_sig(int m, int n, int t, int * b, gf * h_sig, gf * w );
+void binary_quasi_dyadic_sig(int m, int n, int t, int *b, gf *h_sig, gf *w);
 
 /**
  * @brief Binary Cauchy support
@@ -64,8 +64,7 @@ void binary_quasi_dyadic_sig(int m, int n, int t, int * b, gf * h_sig, gf * w );
  * @param w input vector to be used
  *
  */
-void cauchy_support(gf * support, gf * u,gf * w);
-
+void cauchy_support(gf *support, gf *u, gf *w);
 
 /**
  * @brief Key pair generation

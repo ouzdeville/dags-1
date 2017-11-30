@@ -95,8 +95,6 @@ gf gf_diff1(gf a, gf b)
     return (gf)t;
 }
 
-
-
 // Correct gf_Div
 // Use in poly.c
 gf gf_div(gf a, gf b)
@@ -112,8 +110,6 @@ gf gf_div(gf a, gf b)
         return res;
     }
 }
-
-
 
 // Correct gf_Pow
 gf gf_pow(gf in, int n)
@@ -139,8 +135,10 @@ gf gf_mult(gf x, gf y)
 {
     gf a1, b1, a2, b2, a3, b3;
 
-    a1 = x >> 6;     b1 = x & 63;
-    a2 = y >> 6;     b2 = y & 63;
+    a1 = x >> 6;
+    b1 = x & 63;
+    a2 = y >> 6;
+    b2 = y & 63;
 
     a3 = gf_Mult_subfield(gf_Mult_subfield(a1, a2), 36) ^ gf_Mult_subfield(a1, b2) ^ gf_Mult_subfield(b1, a2);
 
@@ -154,7 +152,8 @@ gf gf_sq(gf x)
 {
     gf a1, b1, a3, b3;
 
-    a1 = x >> 6;    b1 = x & 63;
+    a1 = x >> 6;
+    b1 = x & 63;
 
     a3 = gf_Mult_subfield(gf_Mult_subfield(a1, a1), 36);
 
@@ -162,7 +161,6 @@ gf gf_sq(gf x)
 
     return (a3 << 6) ^ b3;
 }
-
 
 // Correct gf_Inv
 gf gf_inv(gf in)
@@ -229,5 +227,3 @@ gf_t gf_rand(int (*u8rnd)())
 {
     return (u8rnd() ^ (u8rnd() << 8)) & gf_ord_sf;
 }
-
-
