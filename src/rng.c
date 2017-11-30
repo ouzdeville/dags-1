@@ -205,7 +205,7 @@ AES256_CTR_DRBG_Update(unsigned char *provided_data,
         AES256_ECB(Key, V, temp+16*i);
     }
     if ( provided_data != NULL )
-        for (int i=0; i<48; i++)
+        for (i=0; i<48; i++)
             temp[i] ^= provided_data[i];
     memcpy(Key, temp, 32);
     memcpy(V, temp+32, 16);
