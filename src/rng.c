@@ -61,7 +61,7 @@ int
 seedexpander(AES_XOF_struct *ctx, unsigned char *x, unsigned long xlen)
 {
     unsigned long   offset;
-    
+    int i;
     if ( x == NULL )
         return RNG_BAD_OUTBUF;
     if ( xlen >= ctx->length_remaining )
@@ -87,7 +87,7 @@ seedexpander(AES_XOF_struct *ctx, unsigned char *x, unsigned long xlen)
         ctx->buffer_pos = 0;
         
         //increment the counter
-        for (int i=15; i>=12; i--) {
+        for ( i=15; i>=12; i--) {
             if ( ctx->ctr[i] == 0xff )
                 ctx->ctr[i] = 0x00;
             else {
@@ -139,10 +139,11 @@ randombytes_init(unsigned char *entropy_input,
                  int security_strength)
 {
     unsigned char   seed_material[48];
+    int i;
     
     memcpy(seed_material, entropy_input, 48);
     if (personalization_string)
-        for (int i=0; i<48; i++)
+        for (i=0; i<48; i++)
             seed_material[i] ^= personalization_string[i];
     memset(DRBG_ctx.Key, 0x00, 32);
     memset(DRBG_ctx.V, 0x00, 16);
@@ -155,10 +156,10 @@ randombytes(unsigned char *x, unsigned long long xlen)
 {
     unsigned char   block[16];
     int             i = 0;
-    
+    int j;
     while ( xlen > 0 ) {
         //increment V
-        for (int j=15; j>=0; j--) {
+        for ( j=15; j>=0; j--) {
             if ( DRBG_ctx.V[j] == 0xff )
                 DRBG_ctx.V[j] = 0x00;
             else {
@@ -189,10 +190,10 @@ AES256_CTR_DRBG_Update(unsigned char *provided_data,
                        unsigned char *V)
 {
     unsigned char   temp[48];
-    
-    for (int i=0; i<3; i++) {
+    int i,j;    
+    for ( i=0; i<3; i++) {
         //increment V
-        for (int j=15; j>=0; j--) {
+        for ( j=15; j>=0; j--) {
             if ( V[j] == 0xff )
                 V[j] = 0x00;
             else {
