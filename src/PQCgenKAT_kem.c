@@ -160,6 +160,7 @@ int main()
         }
         counter++;
         free(sk);
+        printf("%d\n", counter);
     } while (counter < 100);
 
     fclose(fp_req);

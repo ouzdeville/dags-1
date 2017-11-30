@@ -3,7 +3,9 @@
 #endif
 #include "gf.h"
 
+
 /*
+// DAG 96
 #define pol_deg 11 //block number 11
 #define code_length 1216
 #define code_dimension 512
@@ -16,7 +18,7 @@
 
 
 
-
+// DAG 128
 #define pol_deg 11 //block number 11
 #define code_length 2112
 #define code_dimension 704
@@ -29,6 +31,7 @@
 
 
 /*
+// DAG 64
 #define pol_deg 8 //block number 11
 #define code_length 80
 #define code_dimension 48
