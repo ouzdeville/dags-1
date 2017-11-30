@@ -39,6 +39,7 @@ int main()
     int byte_count = 48;
     int counter = 0;
     int i;
+    uint64_t initial_key_pair, final_key_pair, key_pair_count;
 
     // Create the REQUEST file
     sprintf(fn_req, "PQCkemKAT_%d.req", CRYPTO_SECRETKEYBYTES);
@@ -102,10 +103,10 @@ int main()
         // Generate the public/private keypair
         do
         {
-            uint64_t initial_key_pair = rdtsc();
+            initial_key_pair = rdtsc();
             ret_val = crypto_kem_keypair(pk, sk);
-            uint64_t final_key_pair = rdtsc();
-            uint64_t key_pair_count = final_key_pair - initial_key_pair;
+            final_key_pair = rdtsc();
+            key_pair_count = final_key_pair - initial_key_pair;
         } while (ret_val == 0);
 
         printf("Key Generation cycles: %" PRId64 "\n", key_pair_count);
