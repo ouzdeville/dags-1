@@ -38,8 +38,8 @@ void generate_random_vector(int m, gf *vect)
     gf tmp;
     gf *U;
     U = (gf *)calloc(gf_card, sizeof(gf));
-    unsigned char *random_bytes = malloc(gf_card);
-    randombytes(random_bytes, gf_card);
+    unsigned char *random_bytes = malloc(gf_card * sizeof(gf));
+    randombytes(random_bytes, gf_card * sizeof(gf));
     U[0] = 1;
     for (i = 1; i < gf_card; i++)
     {
@@ -48,7 +48,7 @@ void generate_random_vector(int m, gf *vect)
     for (j = 1; j < gf_card; j++)
     {
 
-        v = random_bytes[j] % (j + 1);
+        v = ((gf *)random_bytes)[j] % (j + 1);
         tmp = U[j];
         U[j] = U[v + 1];
         U[v + 1] = tmp;
@@ -65,8 +65,8 @@ void init_random_element(gf *U)
     int i, j, v;
     gf tmp;
     unsigned char *random_bytes = 0;
-    random_bytes = malloc(gf_ord);
-    randombytes(random_bytes, gf_ord);
+    random_bytes = malloc(gf_ord * sizeof(gf));
+    randombytes(random_bytes, gf_ord * sizeof(gf));
     for (i = 0; i <= gf_ord; i++)
     {
         U[i] = i;
@@ -75,7 +75,7 @@ void init_random_element(gf *U)
     for (j = 1; j < gf_ord; j++)
     {
 
-        v = random_bytes[j] % (j + 1);
+        v = ((gf *)random_bytes)[j] % (j + 1);
         tmp = U[j];
         U[j] = U[v + 1];
         U[v + 1] = tmp;
@@ -245,37 +245,44 @@ void cauchy_support(gf *Support, gf *W, gf *w)
 int key_pair(unsigned char *pk, unsigned char *sk)
 {
     gf *u, *v, *w, *z;
-    int return_value;
+    int return_value = 1;
     binmat_t H, H_syst, H_alt;
-    u = (gf *)calloc(order, sizeof(gf));
-    v = (gf *)calloc(code_length, sizeof(gf));
-    w = (gf *)calloc(code_length, sizeof(gf));
-    z = (gf *)calloc(n0_val, sizeof(gf));
-
     gf_init(6);
-    cauchy_support(v, u, w);
-    free(w);
-    //cfile_vec_F12 ("omega.txt", order, u); //Write down omega, not nessary though
-    generate_random_vector(n0_val, z);
-    H = matrix_init(pol_deg * (order), code_length);
-    // construction matrix H
-    secret_matrix(H, u, v, z);
-    free(v);
-    free(z);
-
-    //cfile_matrix_F12("secret_matrix.txt", H.rown, H.coln, H);
-
-    /*
-   * The matrix H_base is obtained by the projection of the matrix
-   *  H into the base field through the function  'mat_Into_base'
-   */
-    H_syst = mat_Into_base(H);
-
-    // Transform H_syst into its systematic by the function "syst" .
-    return_value = syst(H_syst);
-    if (return_value != 0)
+    while(return_value != 0)
     {
-        return return_value;
+        u = (gf *)calloc(order, sizeof(gf));
+        v = (gf *)calloc(code_length, sizeof(gf));
+        w = (gf *)calloc(code_length, sizeof(gf));
+        z = (gf *)calloc(n0_val, sizeof(gf));
+
+
+        cauchy_support(v, u, w);
+        free(w);
+        //cfile_vec_F12 ("omega.txt", order, u); //Write down omega, not nessary though
+        generate_random_vector(n0_val, z);
+        H = matrix_init(pol_deg * (order), code_length);
+        // construction matrix H
+        secret_matrix(H, u, v, z);
+        free(v);
+        free(z);
+
+        //cfile_matrix_F12("secret_matrix.txt", H.rown, H.coln, H);
+
+        /*
+         *The matrix H_base is obtained by the projection of the matrix
+         *H into the base field through the function  'mat_Into_base'
+         */
+        H_syst = mat_Into_base(H);
+
+        // Transform H_syst into its systematic by the function "syst" .
+        // If return_value is not zero create new matrix
+        return_value = syst(H_syst);
+        if (return_value != 0)
+        {
+            free(u);
+            mat_free(H_syst);
+            mat_free(H);
+        }
     }
     /*
    * H_syst is in the form (G | I) we determine G and store
