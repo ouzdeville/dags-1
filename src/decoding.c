@@ -264,7 +264,7 @@ int decoding_H(binmat_t H_alt, const unsigned char *c, unsigned char *error,
     {
         j = LOG_12[app->coeff[i]];
         k = j / LOG_12[alpha];
-        error[pos->coeff[i]] = (unsigned char)(gf_Pow_subfield(2, k));
+        error[pos->coeff[i]] = (unsigned char)(gf_pow_subfield(2, k));
         //printf(" %d " ,valeur_erreurs->coeff[i]);
     }
     poly_free(app);

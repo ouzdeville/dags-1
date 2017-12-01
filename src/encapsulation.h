@@ -12,7 +12,6 @@
 #include <assert.h>
 #include <KangarooTwelve.h>
 
-#include "round.h"
 #include "util.h"
 
 #define cus_len 4 // I random pick this number to fullfill parameter

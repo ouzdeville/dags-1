@@ -80,11 +80,11 @@ gf gf_mult(gf x, gf y) {
 	a2 = y >> gf_extd_sf;
 	b2 = y & (u_val-1);
 
-	a3 = gf_Mult_subfield(gf_Mult_subfield(a1, a2), 36)
-			^ gf_Mult_subfield(a1, b2) ^ gf_Mult_subfield(b1, a2);
+	a3 = gf_mult_fast(gf_mult_fast(a1, a2), 36)
+			^ gf_mult_fast(a1, b2) ^ gf_mult_fast(b1, a2);
 
-	b3 = gf_Mult_subfield(gf_Mult_subfield(a1, a2), 2)
-			^ gf_Mult_subfield(b1, b2);
+	b3 = gf_mult_fast(gf_mult_fast(a1, a2), 2)
+			^ gf_mult_fast(b1, b2);
 
 	return (a3 << gf_extd_sf) ^ b3;
 }
@@ -96,10 +96,10 @@ gf gf_sq(gf x) {
 	a1 = x >> gf_extd_sf;
 	b1 = x & (u_val-1);
 
-	a3 = gf_Mult_subfield(gf_Mult_subfield(a1, a1), 36);
+	a3 = gf_mult_fast(gf_mult_fast(a1, a1), 36);
 
-	b3 = gf_Mult_subfield(gf_Mult_subfield(a1, a1), 2)
-			^ gf_Mult_subfield(b1, b1);
+	b3 = gf_mult_fast(gf_mult_fast(a1, a1), 2)
+			^ gf_mult_fast(b1, b1);
 
 	return (a3 << gf_extd_sf) ^ b3;
 }

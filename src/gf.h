@@ -21,16 +21,28 @@
 gf *gf_log;
 gf *gf_antilog;
 
-#define gf_unit() 1
-#define gf_zero() 0
 #define gf_add(x, y) ((x) ^ (y)) // Addition in the field
 
-////////////////////////////////////////////////////////////////////
-///////////////////////// SUBFIELD OPERATION ///////////////////////
+#define gf_modq_1_sf(d) ((d) % (u_val-1))
 
-/* we obtain a value between 0 and (q-1) included, the class of 0 is
- represented by 0 or q-1 (this is why we write _K->exp[q-1]=_K->exp[0]=1)*/
+#define _gf_modq_1(d) ((d) % (gf_ord))
 
+#define gf_mult_fast_subfield(x, y) ((y) ? gf_antilog_sf[gf_modq_1_sf(gf_log_sf[x] + gf_log_sf[y])] : 0)
+
+// Multiplication in the field : apha^i*alpha^j=alpha^(i+j)
+// Check x is zero, if zero, return 0, else compute
+#define gf_mult_fast(x, y) ((x) ? gf_mult_fast_subfield(x, y) : 0)
+
+// In direct way to calculate power in range 2^6.
+// Only use in line
+// 404:decoding.c: 				valeur_erreurs->coeff[i] = gf_Pow_subfield(2, k);
+// gf_Pow_subfield is always calculate 2^k
+#define gf_pow_subfield(x, i) (gf_antilog_sf[(gf_modq_1_sf(gf_log_sf[x] * i))])
+
+// Inverse in the subfield
+#define gf_inv_subfield(x) gf_antilog_sf[gf_ord_sf - gf_log_sf[x]]
+
+#define gf_mul_fast(x, y) ((y) ? gf_antilog[_gf_modq_1(gf_log[x] + gf_log[y])] : 0)
 
 
 ////////////////////////////////////////////////////////////////////

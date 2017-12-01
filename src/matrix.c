@@ -70,7 +70,7 @@ binmat_t matrix_multiplicaion_subfield(binmat_t A, binmat_t B)
                 a = 0;
                 for (k = 0; k < A.coln; k++)
                 {
-                    a = a ^ gf_Mult_subfield(A.coeff[i][k], B.coeff[k][j]);
+                    a = a ^ gf_mult_fast(A.coeff[i][k], B.coeff[k][j]);
                 }
                 Res.coeff[i][j] = a;
             }
@@ -239,7 +239,7 @@ void mat_line_mult_by_gf(binmat_t A, gf a, int i)
     int j;
     for (j = 0; j < A.coln; j++)
     {
-        A.coeff[i][j] = gf_Mult_subfield(A.coeff[i][j], a);
+        A.coeff[i][j] = gf_mult_fast(A.coeff[i][j], a);
     }
 }
 
@@ -250,7 +250,7 @@ gf *mat_line_mult_with_return(binmat_t A, gf a, int i)
     Line = (gf *)calloc(A.coln, sizeof(gf));
     for (j = 0; j < A.coln; j++)
     {
-        Line[j] = gf_Mult_subfield(A.coeff[i][j], a);
+        Line[j] = gf_mult_fast(A.coeff[i][j], a);
     }
     return Line;
 }
@@ -350,7 +350,7 @@ int syst_mat(binmat_t H)
             for (j = 0; j < n; j++)
             {
                 H.coeff[i][j] = gf_mult(H.coeff[i][j],
-                                        gf_Inv_subfield(H.coeff[i][i + n - k]));
+                                        gf_inv_subfield(H.coeff[i][i + n - k]));
             }
         }
 
@@ -446,7 +446,7 @@ int syst(binmat_t H)
         if (H.coeff[i][i + n - k] != 1)
         {
             aa = H.coeff[i][i + n - k];
-            invPiv = gf_Inv_subfield(aa);
+            invPiv = gf_inv_subfield(aa);
             H.coeff[i][i + n - k] = 1;
 
             for (j = 0; j < n; j++)
@@ -455,7 +455,7 @@ int syst(binmat_t H)
                 {
                     continue;
                 }
-                H.coeff[i][j] = gf_Mult_subfield(H.coeff[i][j], invPiv);
+                H.coeff[i][j] = gf_mult_fast(H.coeff[i][j], invPiv);
             }
         }
 
@@ -473,7 +473,7 @@ int syst(binmat_t H)
 
                 for (j = 0; j < n; j++)
                 {
-                    H.coeff[l][j] = H.coeff[l][j] ^ (gf_Mult_subfield(piv_align, H.coeff[i][j]));
+                    H.coeff[l][j] = H.coeff[l][j] ^ (gf_mult_fast(piv_align, H.coeff[i][j]));
                 }
             }
         }
@@ -517,7 +517,7 @@ gf *mult_matrix_vector_subfield(binmat_t A, gf *v)
     {
         for (k = 0; k < A.coln; k++)
         {
-            Res[i] ^= gf_Mult_subfield(A.coeff[i][k], v[k]);
+            Res[i] ^= gf_mult_fast(A.coeff[i][k], v[k]);
         }
     }
     return Res;
@@ -531,7 +531,7 @@ gf *mult_vector_matrix_subfield(gf *v, binmat_t A)
     {
         for (k = 0; k < A.rown; k++)
         {
-            Res[i] ^= gf_Mult_subfield(A.coeff[k][i], v[k]);
+            Res[i] ^= gf_mult_fast(A.coeff[k][i], v[k]);
         }
     }
     return Res;
