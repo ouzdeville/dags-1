@@ -1,36 +1,22 @@
-#include <stdint.h>
+/*
+ * gf.h
+ *
+ *  Created on: Dec 1, 2017
+ *      Author: vader
+ */
 
-#ifndef GF_H
-#define GF_H
+#ifndef GF_H_
+#define GF_H_
 
-typedef uint16_t gf;
-typedef uint16_t gf_t;
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
 
-// Extension degree 12
-#define gf_extd 12
-// Field size 2^12
-#define gf_card (1 << gf_extd)
-// Field Group order 2^12 - 1
-#define gf_ord ((gf_card)-1)
-
-// Subfield delaration
-
-// Define subfield degree
-#define m_val 2
-// Subfield degree is 6
-#define gf_extd_sf gf_extd / m_val
-// Subfield size 2^6
-#define gf_card_sf (1 << gf_extd_sf)
-// Subfield Group order 2^6 -1
-#define gf_ord_sf ((gf_card_sf)-1)
-
-// Define Field value
-#define u_val 64
-// Define Poly primitive subfield: X^6 + x + 1
-#define poly_primitive_subfield 67
+#include "gf_tables.h"
+#include "types_def.h"
+#include "param.h"
 
 //int gf_extension_degree, gf_cardinality, gf_multiplicative_order;
-
 
 gf *gf_log;
 gf *gf_antilog;
@@ -45,15 +31,11 @@ gf *gf_antilog;
 /* we obtain a value between 0 and (q-1) included, the class of 0 is
  represented by 0 or q-1 (this is why we write _K->exp[q-1]=_K->exp[0]=1)*/
 
-#define gf_modq_1_sf(d) ((d) % 63)
 
-#define _gf_modq_1(d) ((d) % 4095)
 
-gf_t gf_mul_fast_subfield(gf_t x, gf_t y);
-gf_t gf_Mult_subfield(gf_t x, gf_t y);
-gf_t gf_Pow_subfield(gf_t x, int i);
-gf_t gf_Inv_subfield(gf_t x);
-gf gf_mul_fast(gf x, gf y);
+////////////////////////////////////////////////////////////////////
+///////////////////////// MAIN FIELD OPERATION /////////////////////
+// Check y is zero, if zero, return 0, else calculate
 
 
 // Correct gf_Mult1 =>> will rename to gf_Mult
@@ -81,4 +63,4 @@ gf gf_pow(gf f, int n);
 // Un-nessary use antilog and log table
 int gf_init(int extdeg);
 
-#endif
+#endif /* GF_H_ */

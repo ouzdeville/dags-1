@@ -1,5 +1,5 @@
 #include "util.h"
-#include "gf.h"
+
 
 //weight computes the weight of a sequence of elements of type unsigned char
 int weight(unsigned char *r, int size)

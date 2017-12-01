@@ -1,6 +1,6 @@
 #include "key_gen.h"
 
-int disjoint_test(gf *u, gf *v)
+int is_vectors_disjoint(gf *u, gf *v)
 {
     int i, j;
     for (i = 0; i < (order); i++)
@@ -16,7 +16,7 @@ int disjoint_test(gf *u, gf *v)
     return 0;
 }
 
-int Test_disjoint(gf *L, int n)
+int is_vector_disjoint(gf *L, int n)
 {
     int i, j;
     for (i = 0; i < n; i++)
@@ -84,14 +84,14 @@ void init_random_element(gf *U)
     free(random_bytes);
 }
 
-void Remove_From_U(gf elt, gf *U)
+void remove_element_from_vector(gf element, gf *vector)
 {
     int k;
     for (k = 0; k <= gf_ord; k++)
     {
-        if (U[k] == elt)
+        if (vector[k] == element)
         {
-            U[k] = 0;
+            vector[k] = 0;
             break;
         }
     }
@@ -117,7 +117,7 @@ void binary_quasi_dyadic_sig(int m, int n, int t, int *b, gf *h_sig, gf *w)
         {
             i = 1 << s;
             h[i] = U[i + 1];
-            Remove_From_U(h[i], U);
+            remove_element_from_vector(h[i], U);
             for (j = 1; j < i; j++)
             {
                 h[i + j] = 0;
@@ -127,7 +127,7 @@ void binary_quasi_dyadic_sig(int m, int n, int t, int *b, gf *h_sig, gf *w)
                     if (sum_inv_h_i_j_0 != 0)
                     {
                         h[i + j] = gf_inv(sum_inv_h_i_j_0);
-                        Remove_From_U(h[i + j], U);
+                        remove_element_from_vector(h[i + j], U);
                     }
                     else
                     {
@@ -155,8 +155,8 @@ void binary_quasi_dyadic_sig(int m, int n, int t, int *b, gf *h_sig, gf *w)
             for (r = 0; r < t; r++)
             {
                 sum_inv_h_i_0 = (gf_inv(h[r])) ^ (gf_inv(h[0]));
-                Remove_From_U(gf_inv(h[r]), V);
-                Remove_From_U(sum_inv_h_i_0, V);
+                remove_element_from_vector(gf_inv(h[r]), V);
+                remove_element_from_vector(sum_inv_h_i_0, V);
             }
             for (j = 1; j < C; j++)
             {
@@ -172,7 +172,7 @@ void binary_quasi_dyadic_sig(int m, int n, int t, int *b, gf *h_sig, gf *w)
                     for (l = j * t; l < (j + 1) * t; l++)
                     {
                         sum_inv_h_i_0 = (gf_inv(h[l])) ^ (gf_inv(h[0]));
-                        Remove_From_U(sum_inv_h_i_0, V);
+                        remove_element_from_vector(sum_inv_h_i_0, V);
                     }
                 }
             }
@@ -227,9 +227,9 @@ void cauchy_support(gf *Support, gf *W, gf *w)
         {
             W[i] = (gf_inv(h[i])) ^ (w[0]);
         }
-        test_u = Test_disjoint(Support, code_length);
-        test_v = Test_disjoint(W, order);
-        test_u_inter_v = disjoint_test(W, Support);
+        test_u = is_vector_disjoint(Support, code_length);
+        test_v = is_vector_disjoint(W, order);
+        test_u_inter_v = is_vectors_disjoint(W, Support);
         //printf ("\n calcul\n");
 
     } while ((test_u != 0) || (test_v != 0) || (test_u_inter_v != 0));

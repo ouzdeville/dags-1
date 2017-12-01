@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "gf.h"
 #include "poly.h"
 
 poly_t

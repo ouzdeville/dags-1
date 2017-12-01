@@ -5,9 +5,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "rng.h"
 #include "gf.h"
+#include "rng.h"
 #include "param.h"
+#include "types_def.h"
 
 typedef struct matrix
 {
