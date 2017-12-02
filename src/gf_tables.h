@@ -15,5 +15,7 @@
 gf_t gf_log_sf[64];
 gf_t gf_antilog_sf[64];
 
+gf gf_log[4096];
+gf gf_antilog[4096];
 
 #endif /* SRC_GF_TABLES_H_ */

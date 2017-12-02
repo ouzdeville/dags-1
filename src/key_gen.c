@@ -84,7 +84,7 @@ void binary_quasi_dyadic_sig(int m, int n, int t, int *b, gf *h_sig, gf *w) {
 	int i, j, k, s, p, l, l1, c, r, consistent_root, consistent_support_block;
 	int const C = ((gf_card) / t);
 	gf *U, *V, *h;
-	gf sum_inv_h_i_j_0, sum_inv_h_i_0;
+	gf sum_inv_h_i_j_0, sum_inv_h_i_0, temp = 0;
 	h = (gf *) calloc(gf_card, sizeof(gf));
 	U = (gf *) calloc(gf_card, sizeof(gf));
 	V = (gf *) calloc(gf_card, sizeof(gf));
@@ -101,9 +101,8 @@ void binary_quasi_dyadic_sig(int m, int n, int t, int *b, gf *h_sig, gf *w) {
 			for (j = 1; j < i; j++) {
 				h[i + j] = 0;
 				if ((h[i] != 0) && (h[j] != 0)) {
-					sum_inv_h_i_j_0 =
-							(gf_add(gf_add(gf_inv(h[i]), gf_inv(h[j])),
-									(gf_inv(h[0]))));
+					temp = gf_inv(h[i]) ^ gf_inv(h[j]);
+					sum_inv_h_i_j_0 = temp ^ gf_inv(h[0]);
 					if (sum_inv_h_i_j_0 != 0) {
 						h[i + j] = gf_inv(sum_inv_h_i_j_0);
 						remove_element_from_vector(h[i + j], U);
@@ -207,7 +206,7 @@ int key_pair(unsigned char *pk, unsigned char *sk) {
 	gf *u, *v, *w, *z;
 	int return_value = 1;
 	binmat_t H, H_syst, H_alt;
-	gf_init(6);
+	//gf_init(6);
 	while (return_value != 0) {
 		u = (gf *) calloc(order, sizeof(gf));
 		v = (gf *) calloc(code_length, sizeof(gf));
@@ -223,11 +222,9 @@ int key_pair(unsigned char *pk, unsigned char *sk) {
 		free(v);
 		free(z);
 
-		//cfile_matrix_F12("secret_matrix.txt", H.rown, H.coln, H);
-
 		/*
 		 *The matrix H_base is obtained by the projection of the matrix
-		 *H into the base field through the function  'mat_Into_base'
+		 *H into the base field through the function  'matrix_onto_base_F_q'
 		 */
 		H_syst = matrix_onto_base_F_q(H);
 

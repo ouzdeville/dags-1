@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <inttypes.h>
 
 #include "gf_tables.h"
 #include "types_def.h"
@@ -18,10 +19,8 @@
 
 //int gf_extension_degree, gf_cardinality, gf_multiplicative_order;
 
-gf *gf_log;
-gf *gf_antilog;
-
-#define gf_add(x, y) ((x) ^ (y)) // Addition in the field
+//gf *gf_log;
+//gf *gf_antilog;
 
 #define gf_modq_1_sf(d) ((d) % (u_val-1))
 
@@ -33,9 +32,6 @@ gf *gf_antilog;
 // Check x is zero, if zero, return 0, else compute
 #define gf_mult_fast(x, y) ((x) ? gf_mult_fast_subfield(x, y) : 0)
 
-// In direct way to calculate power in range 2^6.
-// Only use in line
-// 404:decoding.c: 				valeur_erreurs->coeff[i] = gf_Pow_subfield(2, k);
 // gf_Pow_subfield is always calculate 2^k
 #define gf_pow_subfield(x, i) (gf_antilog_sf[(gf_modq_1_sf(gf_log_sf[x] * i))])
 
@@ -44,11 +40,9 @@ gf *gf_antilog;
 
 #define gf_mul_fast(x, y) ((y) ? gf_antilog[_gf_modq_1(gf_log[x] + gf_log[y])] : 0)
 
-
 ////////////////////////////////////////////////////////////////////
 ///////////////////////// MAIN FIELD OPERATION /////////////////////
 // Check y is zero, if zero, return 0, else calculate
-
 
 // Correct gf_Mult1 =>> will rename to gf_Mult
 gf gf_mult(gf in0, gf in1);
@@ -66,13 +60,7 @@ gf gf_sq(gf in);
 // Propose gf_Div2
 gf gf_div(gf a, gf b);
 
-// In correct gf_Pow1
-gf gf_Pow1(gf f, int n);
-
 // Propose gf_Ppw
 gf gf_pow(gf f, int n);
-
-// Un-nessary use antilog and log table
-int gf_init(int extdeg);
 
 #endif /* GF_H_ */

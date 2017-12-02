@@ -298,8 +298,7 @@ int syst_mat(binmat_t H) {
 				j = 0;
 				for (j = 0; j < n; j++) {
 					elim = gf_mult(H.coeff[i][i + n - k], H.coeff[l][j]);
-					elim = elim
-							^ (gf_mult(H.coeff[l][i + n - k], H.coeff[i][j]));
+					elim = elim ^ (gf_mult(H.coeff[l][i + n - k], H.coeff[i][j]));
 					H.coeff[l][j] = elim;
 				}
 			}
@@ -309,7 +308,6 @@ int syst_mat(binmat_t H) {
 	return 1;
 }
 
-//=============================================================================================
 
 int matrix_equal(binmat_t H, binmat_t S) {
 	int i, j;

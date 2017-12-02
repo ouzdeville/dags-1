@@ -22,7 +22,7 @@ $(BIN): $(OBJ)
 	$(CC) -O3 $(LINKOBJ) -o $(BIN) $(LIBS)
 
 gf.o: gf.c
-	$(CC) -c gf.c -o gf.o $(CFLAGS)
+	$(CC) -S -c gf.c -o gf.o $(CFLAGS)
 
 key_gen.o: key_gen.c
 	$(CC) -c key_gen.c -o key_gen.o $(CFLAGS)

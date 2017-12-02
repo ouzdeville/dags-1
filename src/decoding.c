@@ -233,7 +233,7 @@ int decoding_H(binmat_t H_alt, const unsigned char *c, unsigned char *error,
             {
                 tmp = gf_mult(ver[pos->coeff[i]],
                               gf_inv(ver[pos->coeff[j]]));
-                tmp = gf_add(1, tmp);
+                tmp = 1 ^ tmp;
                 pol_gf = gf_mult(pol_gf, tmp);
             }
         }
