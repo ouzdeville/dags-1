@@ -12,10 +12,10 @@
 #include "types_def.h"
 
 
-gf_t gf_log_sf[64];
-gf_t gf_antilog_sf[64];
+gf_t gf_log_sf[32];
+gf_t gf_antilog_sf[32];
 
-gf gf_log[4096];
-gf gf_antilog[4096];
+gf gf_log[1024];
+gf gf_antilog[1024];
 
 #endif /* SRC_GF_TABLES_H_ */

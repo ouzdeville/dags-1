@@ -1,14 +1,13 @@
-# Project: shrivastava
-# Makefile created by ouzdeville
+
 CC       = gcc
-OBJ      = gf.o poly.o matrix.o  key_gen.o encapsulation.o decapsulation.o util.o decoding.o kem.o rng.o PQCgenKAT_kem.o  
-LINKOBJ  = gf.o poly.o matrix.o  key_gen.o encapsulation.o decapsulation.o util.o decoding.o kem.o rng.o PQCgenKAT_kem.o
+OBJ      = gf.o poly.o matrix.o  gf_tables.o key_gen.o encapsulation.o decapsulation.o util.o decoding.o kem.o rng.o PQCgenKAT_kem.o  
+LINKOBJ  = gf.o poly.o matrix.o  gf_tables.o key_gen.o encapsulation.o decapsulation.o util.o decoding.o kem.o rng.o PQCgenKAT_kem.o
 LIBS     = -L/usr/lib -L. -lssl -lcrypto -lkeccak
 INCS     = 
 CXXINCS  = 
 BIN      = PQCgenKAT_kem
 LFLAGS=
-CFLAGS= -c -Wall -I. 
+CFLAGS= -c -O3 -Wall -I. 
 RM       = rm -f
 
 .PHONY: all all-before all-after clean clean-custom
@@ -19,10 +18,13 @@ clean: clean-custom
 	${RM} $(OBJ) $(BIN)
 
 $(BIN): $(OBJ)
-	$(CC) -O3 $(LINKOBJ) -o $(BIN) $(LIBS)
+	$(CC) -pg $(LINKOBJ) -o $(BIN) $(LIBS)
+
+gf_tables.o: gf_tables.c
+	$(CC) -c gf_tables.c -o gf_tables.o $(CFLAGS)
 
 gf.o: gf.c
-	$(CC) -S -c gf.c -o gf.o $(CFLAGS)
+	$(CC) -c gf.c -o gf.o $(CFLAGS)
 
 key_gen.o: key_gen.c
 	$(CC) -c key_gen.c -o key_gen.o $(CFLAGS)

@@ -166,7 +166,7 @@ int main()
         counter++;
         free(sk);
     
-    } while (counter < 100);
+    } while (counter < 1);
 
     fclose(fp_req);
     fclose(fp_rsp);

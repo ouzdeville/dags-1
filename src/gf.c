@@ -54,31 +54,35 @@ gf gf_mult(gf x, gf y)
 	b2 = y & (u_val - 1);
 
 	a3 = gf_mult_fast(gf_mult_fast(a1, a2),
-			36) ^ gf_mult_fast(a1, b2) ^ gf_mult_fast(b1, a2);
+			gf_antilog_sf[4]) ^ gf_mult_fast(a1, b2) ^ gf_mult_fast(b1, a2);
 
 	b3 = gf_mult_fast(gf_mult_fast(a1, a2), 2) ^ gf_mult_fast(b1, b2);
 
-    return (a3 << 6) ^ b3;
+    return (a3 << gf_extd_sf) ^ b3;
 }
 
 // Correct gf_sq
 gf gf_sq(gf x)
 {
+//printf("before sq: %d\n",x);
     gf a1, b1, a3, b3;
 
 	a1 = x >> gf_extd_sf;
 	b1 = x & (u_val - 1);
 
-	a3 = gf_mult_fast(gf_mult_fast(a1, a1), 36);
+	a3 = gf_mult_fast(gf_mult_fast(a1, a1), gf_antilog_sf[4]);
 
 	b3 = gf_mult_fast(gf_mult_fast(a1, a1), 2) ^ gf_mult_fast(b1, b1);
+	gf result = (a3 << gf_extd_sf) ^ b3;
+	//printf("after sq: %d\n",result);
 
-    return (a3 << 6) ^ b3;
+    return result;
 }
 
 // Correct gf_Inv
 gf gf_inv(gf in)
 {
+/*
     gf tmp_11;
     gf tmp_1111;
 
@@ -102,10 +106,12 @@ gf gf_inv(gf in)
 
 	out = gf_sq(out); //(a^1023)^2 = 2046
 	out = gf_mult(out, in); //a^2046*a = 2047
+*/
 	//gf t = gf_sq(out); //(a^2047)^2 = 4094
-	/*
-	 gf tmp = gf_pow(in, 4094);
-	 //gf tmp = gf_pow(in, 4094);*/
-	return gf_sq(out);
+
+	 gf tmp = gf_pow(in, 1022);
+	 //gf tmp = gf_pow(in, 4094);
+	//return gf_sq(out);
+	 return tmp;
 }
 
