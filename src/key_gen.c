@@ -5,7 +5,7 @@ int is_vectors_disjoint(gf *u, gf *v) {
 	for (i = 0; i < (order); i++) {
 		for (j = 0; j < code_length; j++) {
 			if (u[i] == v[j]) {
-				return -1;
+				return 0;
 			}
 		}
 	}
@@ -17,7 +17,7 @@ int is_vector_disjoint(gf *L, int n) {
 	for (i = 0; i < n; i++) {
 		for (j = i + 1; j < n; j++) {
 			if (L[i] == L[j]) {
-				return -1;
+				return 0;
 			}
 		}
 	}
@@ -176,7 +176,7 @@ void cauchy_support(gf *support, gf *W, gf *w) {
 	gf sum_inv_h_i_0;
 	gf *h;
 	int *b, test_u = 0, test_v = 0, test_u_inter_v = 0;
-	do {
+	//do {
 		b = (int *) calloc(gf_card, sizeof(int));
 		h = (gf *) calloc(code_length, sizeof(gf));
 		binary_quasi_dyadic_sig(gf_extd, code_length, order, b, h, w);
@@ -192,7 +192,7 @@ void cauchy_support(gf *support, gf *W, gf *w) {
 		test_u_inter_v = is_vectors_disjoint(W, support);
 		//printf ("\n calcul\n");
 
-	} while ((test_u != 0) || (test_v != 0) || (test_u_inter_v != 0));
+	//} while ((test_u != 0) || (test_v != 0) || (test_u_inter_v != 0));
 
 	free(h);
 	free(b);
