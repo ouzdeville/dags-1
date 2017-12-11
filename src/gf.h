@@ -26,11 +26,22 @@
 
 #define _gf_modq_1(d) ((d) % (gf_ord))
 
-#define gf_mult_fast_subfield(x, y) ((y) ? gf_antilog_sf[gf_modq_1_sf(gf_log_sf[x] + gf_log_sf[y])] : 0)
+static inline gf gf_mult_fast(gf in0, gf in1) {
+	uint64_t i, tmp, t0 = in0, t1 = in1;
 
-// Multiplication in the field : apha^i*alpha^j=alpha^(i+j)
-// Check x is zero, if zero, return 0, else compute
-#define gf_mult_fast(x, y) ((x) ? gf_mult_fast_subfield(x, y) : 0)
+	//Multiplication
+	tmp = t0 * (t1 & 1);
+
+	for (i = 1; i < 6; i++)
+		tmp ^= (t0 * (t1 & (1 << i)));
+
+	//reduction
+	tmp = tmp & 0x7FF; // tmp & 0000 0111 1111 1111
+	tmp = tmp ^ (tmp >> 6);
+	tmp = tmp ^ ((tmp >> 5) & 0x3E);
+	tmp = tmp & 0x3F;
+	return tmp;
+}
 
 // gf_Pow_subfield is always calculate 2^k
 #define gf_pow_subfield(x, i) (gf_antilog_sf[(gf_modq_1_sf(gf_log_sf[x] * i))])
