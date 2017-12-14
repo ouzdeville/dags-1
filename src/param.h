@@ -17,6 +17,8 @@
 // Subfield Group order 2^6 -1
 #define gf_ord_sf ((gf_card_sf)-1)
 
+#define primitive_element_in_f_q 36
+
 // Define Field value
 #define u_val 64
 // Define Poly primitive subfield: X^6 + x + 1

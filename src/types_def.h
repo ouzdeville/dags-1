@@ -12,6 +12,7 @@
 
 typedef uint16_t gf;
 typedef uint16_t gf_t;
+typedef uint32_t gf_p;
 
 
 #endif /* SRC_TYPES_DEF_H_ */

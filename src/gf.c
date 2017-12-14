@@ -38,18 +38,37 @@ gf gf_pow(gf in, int n) {
 
 // Correct gf_mult
 gf gf_mult(gf x, gf y) {
-	gf a1, b1, a2, b2, a3, b3;
+	//gf a1, b1, a2, b2, a3, b3;
+	gf a3, b3;
 
-	a1 = x >> gf_extd_sf;
-	b1 = x & (u_val - 1);
-	a2 = y >> gf_extd_sf;
-	b2 = y & (u_val - 1);
+	//a1 = (x >> gf_extd_sf);
+	//b1 = (x & (u_val - 1));
+	//a2 = (y >> gf_extd_sf);
+	//b2 = (y & (u_val - 1));
 
-	a3 = gf_mult_fast(gf_mult_fast(a1, a2),
-			36) ^ gf_mult_fast(a1, b2) ^ gf_mult_fast(b1, a2);
+	gf tmp = gf_mult_fast((x >> gf_extd_sf), (y >> gf_extd_sf));
 
-	b3 = gf_mult_fast(gf_mult_fast(a1, a2), 2) ^ gf_mult_fast(b1, b2);
+	gf_p tmp1 = ((x >> gf_extd_sf) << 16) | (y >> gf_extd_sf);
+	gf_p tmp2 = ((y & (u_val - 1)) << 16) | (x & (u_val - 1));
+	//gf result_1 = gf_mult_fast_6(a1, b2);
+	//gf result = gf_mult_fast_6(b1, a2);
+	gf_p r = gf_mult_parallel_4(tmp1, tmp2);
+	a3 = gf_mult_fast(tmp, 36) ^ r ^ (r >> 16);
 
+	//a3 = gf_mult_fast_6(tmp, 36) ^ result ^ result_1;
+
+	//printf("temp_result %"PRIu16"\n", temp_result);
+	//printf("a3 %"PRIu16"\n", a3);
+
+	gf_p tmp11 = (tmp << 16) | (x & (u_val - 1));
+	gf_p tmp12 = (2 << 16) | (y & (u_val - 1));
+	gf_p r1 = gf_mult_parallel_4(tmp11, tmp12);
+	b3 = (r1 >> 16) ^ r1;
+
+	//b3 = gf_mult_fast_6(tmp, 2) ^ gf_mult_fast_6(b1, b2);
+
+	//printf("temp_result %"PRIu16"\n", temp_result);
+	//printf("b3 %"PRIu16"\n", b3);
 	return (a3 << gf_extd_sf) ^ b3;
 }
 
