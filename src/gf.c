@@ -20,21 +20,7 @@ gf gf_div(gf a, gf b) {
 	}
 }
 
-// Correct gf_Pow
-gf gf_pow(gf in, int n) {
 
-	gf h, t;
-	h = 1;
-	t = in;
-	while (n != 0) {
-		if ((n & 1) == 1) {
-			h = gf_mult(h, t);
-		}
-		n = n >> 1;
-		t = gf_mult(t, t);
-	}
-	return h;
-}
 
 // Correct gf_mult
 gf gf_mult(gf x, gf y) {

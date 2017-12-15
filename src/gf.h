@@ -93,7 +93,5 @@ gf gf_sq(gf in);
 // Propose gf_Div2
 gf gf_div(gf a, gf b);
 
-// Propose gf_Ppw
-gf gf_pow(gf f, int n);
 
 #endif /* GF_H_ */

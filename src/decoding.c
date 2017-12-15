@@ -131,7 +131,7 @@ int decoding_H(binmat_t H_alt, const unsigned char *c, unsigned char *error,
     poly_t omega, sigma, re, uu, u, quotient, resto, app, temp;
     poly_t pol, pos;
     gf *ver, pol_gf, tmp, tmp1, o;
-    gf alpha;
+    //gf alpha;
 
     //Compute Syndrome normally
     Syndrome = poly_alloc(st - 1);
@@ -231,8 +231,7 @@ int decoding_H(binmat_t H_alt, const unsigned char *c, unsigned char *error,
         {
             if (i != j)
             {
-                tmp = gf_mult(ver[pos->coeff[i]],
-                              gf_inv(ver[pos->coeff[j]]));
+                tmp = gf_mult(ver[pos->coeff[i]], gf_inv(ver[pos->coeff[j]]));
                 tmp = 1 ^ tmp;
                 pol_gf = gf_mult(pol_gf, tmp);
             }
@@ -246,7 +245,7 @@ int decoding_H(binmat_t H_alt, const unsigned char *c, unsigned char *error,
     poly_free(omega);
 
     //Determining the value of the errors
-    alpha = gf_pow(64, 65);
+    //alpha = gf_pow(64, 65);
 
     LOG_12 = (int *)calloc(gf_card, sizeof(int));
     tmp = 1;
@@ -258,12 +257,13 @@ int decoding_H(binmat_t H_alt, const unsigned char *c, unsigned char *error,
         LOG_12[tmp] = i;
     }
 
+
     k = 0;
     //Reconstruction of the error vector
     for (i = 0; i <= app->deg; i++)
     {
         j = LOG_12[app->coeff[i]];
-        k = j / LOG_12[alpha];
+        k = j / LOG_12[2];
         error[pos->coeff[i]] = (unsigned char)(gf_pow_subfield(2, k));
         //printf(" %d " ,valeur_erreurs->coeff[i]);
     }
