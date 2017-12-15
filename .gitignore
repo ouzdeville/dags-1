@@ -52,3 +52,6 @@ Mkfile.old
 dkms.conf
 /Debug/
 /Release/
+/PQCkemKAT_2973704.req
+/PQCkemKAT_2973704.rsp
+/perf.data
