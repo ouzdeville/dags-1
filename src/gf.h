@@ -71,27 +71,11 @@ static inline gf_p gf_mult_parallel_4(gf_p a, gf_p b) {
 // Inverse in the subfield
 #define gf_inv_subfield(x) gf_antilog_sf[gf_ord_sf - gf_log_sf[x]]
 
-#define gf_mul_fast(x, y) ((y) ? gf_antilog[_gf_modq_1(gf_log[x] + gf_log[y])] : 0)
-
-////////////////////////////////////////////////////////////////////
-///////////////////////// MAIN FIELD OPERATION /////////////////////
-// Check y is zero, if zero, return 0, else calculate
-
-// Correct gf_Mult1 =>> will rename to gf_Mult
 gf gf_mult(gf in0, gf in1);
 
-// Correct gf_Inv1 =>> will rename to gf_Inv
-// Use in poly, matrix, keygen, decoding
 gf gf_inv(gf in);
 
-// Correct gf_sq1 =>> will rename to gf_sq
 gf gf_sq(gf in);
-
-// Incorrect gf_Div1
-//gf gf_Div1(gf a, gf b);
-
-// Propose gf_Div2
-gf gf_div(gf a, gf b);
 
 
 #endif /* GF_H_ */

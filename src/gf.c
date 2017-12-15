@@ -8,17 +8,6 @@
  Addition field element, we used XOR between integers.
  */
 
-// Correct gf_Div
-// Use in poly.c
-gf gf_div(gf a, gf b) {
-	if (b == 0) {
-		fprintf(stderr, "ERROR %d is not invertible", b);
-		exit(-1);
-	} else {
-		gf res = gf_mult(a, gf_inv(b));
-		return res;
-	}
-}
 
 // Correct gf_mult
 gf gf_mult(gf x, gf y) {
