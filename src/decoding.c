@@ -26,7 +26,7 @@ void polynome_syndrome_1(binmat_t H, const unsigned char *mot, poly_t S)
         }
         S->coeff[j] = tmp;
     }
-    poly_calcule_deg(S);
+    poly_compute_deg(S);
 }
 
 /*
@@ -37,13 +37,10 @@ binmat_t alternant_matrix(binmat_t H, gf *u)
 {
     int i, j, k;
     int st = order * pol_deg;
-    poly_t Srivastava;
+    poly_t srivastava;
     poly_t *g, pol1, pol2, temp;
     binmat_t H_alter, H_alt, B, C;
-    ;
 
-    //Construction of the First intermediate matrix
-    //printf("\n   Construction of the First intermediate matrix \n");
     H_alter = matrix_init(st, code_length);
     for (i = 0; i < order; i++)
     {
@@ -56,13 +53,7 @@ binmat_t alternant_matrix(binmat_t H, gf *u)
         }
     }
 
-    //Construction of Srivastava's Polynome
-    //printf("\n  Construction of Srivastava's Polynome  \n");
-    Srivastava = poly_srivastava(u, order, pol_deg);
-
-    //Construction of the Second intermediate matrix
-    //printf("\n   Construction of the Second intermediate matrix \n");
-
+    srivastava = poly_srivastava(u, order, pol_deg);
 
     g = (poly_t *)malloc(st * sizeof(poly_t));
 
@@ -81,11 +72,11 @@ binmat_t alternant_matrix(binmat_t H, gf *u)
             temp = poly_mul(pol1, pol2);
             poly_free(pol1);
             pol1 = temp;
-            g[i * pol_deg + k] = poly_quo(Srivastava, pol1);
-            poly_calcule_deg(g[i * pol_deg + k]);
+            g[i * pol_deg + k] = poly_quo(srivastava, pol1);
+            poly_compute_deg(g[i * pol_deg + k]);
         }
     }
-    poly_free(Srivastava);
+    poly_free(srivastava);
     C = matrix_init(st, st);
     for (i = 0; i < st; i++)
     {
@@ -127,18 +118,18 @@ int decoding_H(binmat_t H_alt, const unsigned char *c, unsigned char *error,
     int i, k, j, dr;
     int *LOG_12;
     int st = order * pol_deg;
-    poly_t Syndrome;
-    poly_t omega, sigma, re, uu, u, quotient, resto, app, temp;
+    poly_t syndrom;
+    poly_t omega, sigma, re, uu, u, quotient, remainder, app, temp;
     poly_t pol, pos;
     gf *ver, pol_gf, tmp, tmp1, o;
     //gf alpha;
 
     //Compute Syndrome normally
-    Syndrome = poly_alloc(st - 1);
-    polynome_syndrome_1(H_alt, c, Syndrome);
+    syndrom = poly_alloc(st - 1);
+    polynome_syndrome_1(H_alt, c, syndrom);
     //aff_poly(Syndrome);
 
-    if (Syndrome->deg == -1)
+    if (syndrom->deg == -1)
     {
         return -1;
     }
@@ -146,10 +137,10 @@ int decoding_H(binmat_t H_alt, const unsigned char *c, unsigned char *error,
     //Resolution of the key equation
     re = poly_alloc(st);
     re->coeff[st] = 1;
-    poly_calcule_deg(re);
-    resto = poly_alloc(st);
-    resto->coeff[st] = 1;
-    poly_calcule_deg(resto);
+    poly_compute_deg(re);
+    remainder = poly_alloc(st);
+    remainder->coeff[st] = 1;
+    poly_compute_deg(remainder);
 
     app = poly_alloc(st);
     uu = poly_alloc(st);
@@ -159,16 +150,16 @@ int decoding_H(binmat_t H_alt, const unsigned char *c, unsigned char *error,
     u->coeff[0] = 1;
     u->deg = 0;
 
-    dr = Syndrome->deg;
+    dr = syndrom->deg;
 
     while (dr >= (st / 2))
     {
-        quotient = poly_quo(re, Syndrome);
-        poly_rem(resto, Syndrome);
+        quotient = poly_quo(re, syndrom);
+        poly_rem(remainder, syndrom);
 
-        poly_set(re, Syndrome);
-        poly_set(Syndrome, resto);
-        poly_set(resto, re);
+        poly_set(re, syndrom);
+        poly_set(syndrom, remainder);
+        poly_set(remainder, re);
 
         poly_set(app, uu);
         poly_set(uu, u);
@@ -178,19 +169,19 @@ int decoding_H(binmat_t H_alt, const unsigned char *c, unsigned char *error,
         poly_free(quotient);
         u = temp;
         poly_add_free(u, u, app);
-        poly_calcule_deg(Syndrome);
-        dr = Syndrome->deg;
+        poly_compute_deg(syndrom);
+        dr = syndrom->deg;
     }
     poly_free(re);
     poly_free(uu);
     poly_free(app);
-    poly_free(resto);
+    poly_free(remainder);
 
     //Then we find error locator poly (sigma) and error evaluator poly (omega)
     pol = poly_alloc(0);
     pol->coeff[0] = gf_inv(poly_eval(u, 0));
-    omega = poly_mul(Syndrome, pol);
-    poly_free(Syndrome);
+    omega = poly_mul(syndrom, pol);
+    poly_free(syndrom);
     sigma = poly_mul(u, pol);
     poly_free(pol);
     poly_free(u);
@@ -213,7 +204,7 @@ int decoding_H(binmat_t H_alt, const unsigned char *c, unsigned char *error,
             j += 1;
         }
     }
-    poly_calcule_deg(pos);
+    poly_compute_deg(pos);
     poly_free(sigma);
 
     //Element for determining the value of errors
@@ -237,10 +228,11 @@ int decoding_H(binmat_t H_alt, const unsigned char *c, unsigned char *error,
             }
         }
         o = poly_eval(omega, gf_inv(ver[pos->coeff[j]]));
+        //TODO: Verify calls to "mult" and try to parallelize all
         tmp1 = gf_mult(H_alt.coeff[0][pos->coeff[j]], pol_gf);
         app->coeff[j] = gf_mult(o, gf_inv(tmp1));
     }
-    poly_calcule_deg(app);
+    poly_compute_deg(app);
     free(ver);
     poly_free(omega);
 
@@ -265,7 +257,6 @@ int decoding_H(binmat_t H_alt, const unsigned char *c, unsigned char *error,
         j = LOG_12[app->coeff[i]];
         k = j / LOG_12[2];
         error[pos->coeff[i]] = (unsigned char)(gf_pow_subfield(2, k));
-        //printf(" %d " ,valeur_erreurs->coeff[i]);
     }
     poly_free(app);
     free(LOG_12);

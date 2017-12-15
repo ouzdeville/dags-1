@@ -24,7 +24,7 @@ typedef struct polynomial {
 #define poly_tete(p) ((p)->coeff[(p)->deg])
 
 
-int poly_calcule_deg(poly_t p);
+int poly_compute_deg(poly_t p);
 poly_t poly_alloc(int d);
 poly_t poly_copy(poly_t p);
 void poly_free(poly_t p);

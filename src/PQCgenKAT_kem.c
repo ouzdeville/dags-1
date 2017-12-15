@@ -78,8 +78,8 @@ int main() {
 	int byte_count = 48;
 	int counter = 0;
 	int i;
-	int cii = 0;
-	uint64_t initial_key_pair, final_key_pair, key_pair_count;
+	//int cii = 0;
+	//uint64_t initial_key_pair, final_key_pair, key_pair_count;
 
 	// Create the REQUEST file
 	sprintf(fn_req, "PQCkemKAT_%d.req", CRYPTO_SECRETKEYBYTES);
@@ -189,7 +189,7 @@ int main() {
 		counter++;
 		free(sk);
 
-	} while (counter < 100);
+	} while (counter < 2);
 
 	fclose(fp_req);
 	fclose(fp_rsp);
