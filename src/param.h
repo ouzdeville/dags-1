@@ -42,8 +42,8 @@
 #define code_dimension 704
 #define order  (1<<6)  // number of line of each block matrix
 #define n0_val 33 // number of constant block
-#define k_prime 32
-#define k_sec 672
+#define k_prime  43
+#define k_sec 661
 #define n0_w 352
 #define ss_length 64
 
