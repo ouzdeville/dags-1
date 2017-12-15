@@ -20,8 +20,6 @@ gf gf_div(gf a, gf b) {
 	}
 }
 
-
-
 // Correct gf_mult
 gf gf_mult(gf x, gf y) {
 	//gf a1, b1, a2, b2, a3, b3;
@@ -65,9 +63,13 @@ gf gf_sq(gf x) {
 	a1 = x >> gf_extd_sf;
 	b1 = x & (u_val - 1);
 
-	a3 = gf_mult_fast(gf_mult_fast(a1, a1), 36);
+	gf_p r = gf_mult_parallel_4((a1 << 16) | b1, ((a1) << 16) | b1);
+	gf tt = r >> 16;
 
-	b3 = gf_mult_fast(gf_mult_fast(a1, a1), 2) ^ gf_mult_fast(b1, b1);
+	gf_p r1 = gf_mult_parallel_4(((tt) << 16) | tt, (36 << 16) | 2);
+
+	a3 = (r1 >> 16);
+	b3 = (r1 & 0xFFF) ^ r;
 
 	return (a3 << gf_extd_sf) ^ b3;
 }
